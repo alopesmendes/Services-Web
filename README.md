@@ -78,8 +78,14 @@ In order to work on this project with Eclipse, follow these steps:
 5. Make sure all projects are using Java 1.8 as Compiler compliance level in `Project properties > Java Compiler`
 6. Feel free to configure a Tomcat server within Eclipse to run the webservice directly from the IDE
 
+## UML
+
+<p align="center">
+	<img src="https://github.com/alopesmendes/Rest/blob/dev/ailton/Images/UML.png" alt="" />
+</p>
+
 ## Contributors
 
-Ailton LOPES MENDES
-Gérald LIN
-Alexandre MIRANDA
+* Ailton LOPES MENDES
+* Gérald LIN
+* Alexandre MIRANDA
