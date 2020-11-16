@@ -12,6 +12,12 @@
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-		<outputDirectory>build</outputDirectory>
+		<outputDirectory>build/classes</outputDirectory>
+		<plugins>
+			<plugin>
+			    <groupId>org.apache.tomcat.maven</groupId>
+			    <artifactId>tomcat7-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
 	</build>
 </project>

@@ -29,16 +29,16 @@
   <ns1:namespace>http://xml.apache.org/axis/wsdd/</ns1:namespace>
  </ns1:service>
  <ns1:service name="Hello" provider="java:RPC" style="wrapped" use="literal">
-  <ns2:operation name="sayHello" qname="ns1:sayHello" returnQName="ns1:sayHelloReturn" returnType="xsd:string" soapAction="" xmlns:ns1="http://ifscars.corp.uge.fr" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://xml.apache.org/axis/wsdd/">
+  <ns2:operation name="sayHello" qname="ns1:sayHello" returnQName="ns1:sayHelloReturn" returnType="xsd:string" soapAction="" xmlns:ns1="http://web.ifscars.corp.uge.fr" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://xml.apache.org/axis/wsdd/">
    <ns2:parameter qname="ns1:name" type="xsd:string"/>
   </ns2:operation>
   <ns1:parameter name="allowedMethods" value="sayHello"/>
   <ns1:parameter name="typeMappingVersion" value="1.2"/>
   <ns1:parameter name="wsdlPortType" value="Hello"/>
-  <ns1:parameter name="className" value="fr.uge.corp.ifscars.Hello"/>
+  <ns1:parameter name="className" value="fr.uge.corp.ifscars.web.Hello"/>
   <ns1:parameter name="wsdlServicePort" value="Hello"/>
-  <ns1:parameter name="schemaQualified" value="http://ifscars.corp.uge.fr"/>
-  <ns1:parameter name="wsdlTargetNamespace" value="http://ifscars.corp.uge.fr"/>
+  <ns1:parameter name="schemaQualified" value="http://web.ifscars.corp.uge.fr"/>
+  <ns1:parameter name="wsdlTargetNamespace" value="http://web.ifscars.corp.uge.fr"/>
   <ns1:parameter name="wsdlServiceElement" value="HelloService"/>
  </ns1:service>
  <ns1:service name="Version" provider="java:RPC">
