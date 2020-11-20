@@ -14,5 +14,13 @@ import fr.uge.corp.ifscars.cars.ICar;
  */
 @SuppressWarnings("serial")
 public class Rating implements Serializable {
-
+	static enum Score {
+		Excellent, Good, Adequate, Bad, Terrible, None,
+	}
+	
+	public String display() {
+		return "Rating";
+	}
+	
+	
 }
