@@ -81,9 +81,8 @@ public interface ICar extends Remote {
 			try {
 				return new NullCar();
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
-			return null;
 		}
 
 		@Override
