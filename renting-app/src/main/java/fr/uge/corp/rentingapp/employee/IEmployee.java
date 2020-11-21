@@ -4,8 +4,6 @@ import java.rmi.RemoteException;
 
 import fr.uge.corp.ifscars.cars.ICar;
 import fr.uge.corp.ifscars.observe.IObservateur;
-import fr.uge.corp.ifscars.renting.IRentingService;
-import fr.uge.corp.ifscars.renting.IRentingService.RentStatus;
 
 /**
  * <p>The interface IEmployee will represent the different employees.</p>
@@ -18,12 +16,42 @@ import fr.uge.corp.ifscars.renting.IRentingService.RentStatus;
  */
 public interface IEmployee {
 	
+	/**
+	 * @return Getter for id.
+	 * @throws RemoteException
+	 */
 	long getId() throws RemoteException;
 	
-	RentStatus request(String model, IRentingService service) throws RemoteException;
+	/**
+	 * This method will request a car and give it if it's possible.
+	 * @param model of the {@link ICar}
+	 * @throws RemoteException
+	 */
+	void request(String model) throws RemoteException;
 	
-	void returnCar(String model, IRentingService service) throws RemoteException;
+	/**
+	 * @param model
+	 * @throws RemoteException
+	 */
+	void returnCar(String model, int rating, int condition) throws RemoteException;
 	
+	/**
+	 * Asks to display the rating.
+	 * @param model
+	 * @throws RemoteException
+	 */
+	void ratingCar(String model) throws RemoteException;
+	
+	/**
+	 * @return Getter for observateur.
+	 * @throws RemoteException
+	 */
 	IObservateur getObservateur() throws RemoteException;
 	
+	
+	/**
+	 * @return a String with all rented cars.
+	 * @throws RemoteException
+	 */
+	String allRentedCars() throws RemoteException;
 }

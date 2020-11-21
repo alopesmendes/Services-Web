@@ -32,8 +32,11 @@ public interface IRentingService extends Remote, IObserve {
 	 * @return the car if all conditions are met otherwise NullCar.
 	 * @throws RemoteException
 	 */
-	ICar getCar(long id, String model, boolean condition) throws RemoteException;
+	ICar rentCar(long id, String model, boolean condition) throws RemoteException;
 	
+	ICar getCar(String model) throws RemoteException;
+	
+	ICar[] getAllCars() throws RemoteException;
 		
 	/**
 	 * Returns 0 if the {@link ICar} corresponding to the model does not exist.
@@ -56,10 +59,16 @@ public interface IRentingService extends Remote, IObserve {
 	/**
 	 * Returns a rent car.
 	 * @param car the {@link ICar} returned.
+	 * @throws RemoteException
 	 */
 	void returnCar(ICar car) throws RemoteException;
 	
+	/**
+	 * Notify's all observateurs of a change.
+	 * @throws RemoteException
+	 */
 	void notifyObservateurs() throws RemoteException;
+	
 		
 	String display() throws RemoteException;
 	

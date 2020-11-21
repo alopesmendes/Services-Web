@@ -42,9 +42,37 @@ public class Car extends UnicastRemoteObject implements ICar {
 		return price;
 	}
 
+
 	@Override
-	public List<Rating> ratings() throws RemoteException{
-		return ratings;
+	public Rating[] ratings() throws RemoteException {
+		Rating[] rs = new Rating[ratings.size()];
+		for (int i = 0; i < ratings.size(); i++) {
+			rs[i] = ratings.get(i);
+		}
+		return rs;
+	}
+
+
+	@Override
+	public Rating averageRating() throws RemoteException {
+		double sumR = 0;
+		double sumC = 0;
+		for (Rating r : ratings) {
+			sumR += r.getRating();
+			sumC += r.getCondition();
+		}
+		return new Rating(sumR / ratings.size(), sumC / ratings.size());
+	}
+
+	@Override
+	public void addRating(double rating, double condition) throws RemoteException {
+		ratings.add(new Rating(rating, condition));
+		
+	}
+
+	@Override
+	public String display() throws RemoteException {
+		return model + " " + averageRating().display();
 	}
 
 }

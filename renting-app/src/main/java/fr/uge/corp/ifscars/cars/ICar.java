@@ -3,8 +3,6 @@ package fr.uge.corp.ifscars.cars;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Collections;
-import java.util.List;
 
 import fr.uge.corp.ifscars.rating.Rating;
 
@@ -30,8 +28,25 @@ public interface ICar extends Remote {
 	
 	
 	
-	List<Rating> ratings() throws RemoteException;
+	/**
+	 * @return An array of all ratings.
+	 * @throws RemoteException
+	 */
+	Rating[] ratings() throws RemoteException;
 	
+	/**
+	 * @return the average {@link Rating} of the car.
+	 * @throws RemoteException
+	 */
+	Rating averageRating() throws RemoteException;
+	
+
+	/**
+	 * @param rating
+	 * @param condition
+	 * @throws RemoteException
+	 */
+	void addRating(double rating, double condition) throws RemoteException;
 	
 	/**
 	 * @return false by default.
@@ -40,6 +55,11 @@ public interface ICar extends Remote {
 		return false;
 	}
 	
+	String display() throws RemoteException;
+	
+	/**
+	 * The car that represent the Null Car.
+	 */
 	static ICar NULL_CAR = NullCar.create();	
 	
 	/**
@@ -85,8 +105,27 @@ public interface ICar extends Remote {
 		}
 
 		@Override
-		public List<Rating> ratings() throws RemoteException {
-			return Collections.unmodifiableList(Collections.emptyList());
+		public Rating[] ratings() throws RemoteException {
+			return new Rating[1];
+		}
+
+	
+
+		@Override
+		public Rating averageRating() throws RemoteException {
+			return new Rating(0, 0);
+		}
+
+		@Override
+		public void addRating(double rating, double condition) throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public String display() throws RemoteException {
+			// TODO Auto-generated method stub
+			return "";
 		}
 	}
 }

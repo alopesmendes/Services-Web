@@ -2,7 +2,10 @@ package fr.uge.corp.rentingapp.employee;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,17 +18,17 @@ import fr.uge.corp.ifscars.renting.IRentingService.RentStatus;
 public class Employee extends UnicastRemoteObject implements IEmployee{
 	public static class Observateur extends UnicastRemoteObject implements IObservateur{
 		
-		private ICar car;
+		private Map<String, ICar> cars;
 		private RentStatus status;
-		private long id;
+		private final long id;
 		private String model;
 		
 		
 		public Observateur(long id) throws RemoteException {
 			this.id = id;
-			car = ICar.NULL_CAR;
+			cars = new HashMap<>();
 			status = RentStatus.None;
-			model = car.getModel();
+			model = ICar.NULL_CAR.getModel();
 		}
 
 		@Override
@@ -34,27 +37,33 @@ public class Employee extends UnicastRemoteObject implements IEmployee{
 				case None: case Give:
 					break;
 				case Wait:
-					car = service.getCar(id, model, true);
+					ICar car = service.rentCar(id, model, true);
 					status = car.isNull() ? RentStatus.Wait : RentStatus.Give;
 					if (status == RentStatus.Give) {
 						logger.log(Level.INFO, "You have rented "+car.getModel());
+						cars.put(model, car);
 					}
 				default:
 					break;
 			}
-			//logger.log(Level.INFO, "status:"+status+", car:"+car.getModel()+", id:"+id);
 		}
 		
 	}
 	
 	private final long id;
 	private Observateur obs;
+	private final IRentingService service;
 
 	
 	private static final Logger logger = Logger.getLogger(Employee.class.getName());
 	
-	public Employee(long id) throws RemoteException {
+	public Employee(long id, IRentingService service) throws RemoteException {
+		Objects.requireNonNull(service);
+		if (id < 0) {
+			
+		}
 		this.id = id;
+		this.service = service;
 		obs = new Observateur(id);
 	}
 	
@@ -64,17 +73,22 @@ public class Employee extends UnicastRemoteObject implements IEmployee{
 	}
 
 	@Override
-	public RentStatus request(String model, IRentingService service) throws RemoteException {
+	public void request(String model) throws RemoteException {
 		Objects.requireNonNull(model);
 		Objects.requireNonNull(service);
+		if (obs.cars.containsKey(model)) {
+			logger.log(Level.INFO, "Already rented the model:"+model);
+			return;
+		}
 		obs.model = model;
 		
 		obs.status = service.getStatus(model);
 		switch (obs.status) {
 			case Give:
-				obs.car = service.getCar(id, model, true);
-				if (!obs.car.isNull()) {
-					logger.log(Level.INFO, "You have rented "+obs.car.getModel());
+				ICar car = service.rentCar(id, model, true);
+				if (!car.isNull()) {
+					logger.log(Level.INFO, "You have rented "+car.getModel());
+					obs.cars.put(model, car);
 				} else {
 					obs.status = RentStatus.Wait;
 					logger.log(Level.INFO, "Wait ...");
@@ -89,21 +103,41 @@ public class Employee extends UnicastRemoteObject implements IEmployee{
 				break;
 		}
 		
-		return obs.status;
 	}
 
 	@Override
-	public void returnCar(String model, IRentingService service) throws RemoteException {
-		if (!obs.car.isNull()) {
-			service.returnCar(obs.car);
+	public void returnCar(String model, int rating, int condition) throws RemoteException {
+		if (obs.cars.containsKey(model)) {
+			ICar car = obs.cars.get(model);
+			car.addRating(rating, condition);
+			service.returnCar(car);
 			obs.status = RentStatus.None;
-			logger.log(Level.INFO, "you have return "+obs.car.getModel());
+			logger.log(Level.INFO, "you have return "+car.getModel());
+			obs.cars.remove(model);
 		}
 	}
 
 	@Override
 	public IObservateur getObservateur() throws RemoteException {
 		return obs;
+	}
+
+	@Override
+	public String allRentedCars() throws RemoteException {
+		StringJoiner sj = new StringJoiner(", ", "<", ">");
+		for (String m : obs.cars.keySet()) {
+			sj.add(m);
+		}
+		return sj.toString();
+	}
+
+	@Override
+	public void ratingCar(String model) throws RemoteException {
+		ICar car = service.getCar(model);
+		if (!car.isNull()) {
+			logger.log(Level.INFO, car.display());
+		}
+		
 	}
 
 }

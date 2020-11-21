@@ -3,7 +3,9 @@ package fr.uge.corp.ifscars.cars;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -69,7 +71,7 @@ public class Storage extends UnicastRemoteObject implements Remote {
 	 * @return the {@link ICar} from it's model.
 	 * @throws RemoteException
 	 */
-	public ICar get(String model) throws RemoteException{
+	public ICar take(String model) throws RemoteException{
 		Objects.requireNonNull(model);
 		StockCar sc = storage.computeIfAbsent(model, __ -> new StockCar(ICar.NULL_CAR, 0));
 
@@ -83,7 +85,30 @@ public class Storage extends UnicastRemoteObject implements Remote {
 		sc.quantity--;
 		return storage.get(model).car;
 	}
-
+	
+	/**
+	 * @param model
+	 * @return Getter of car from model.
+	 * @throws RemoteException
+	 */
+	public ICar get(String model) throws RemoteException {
+		Objects.requireNonNull(model);
+		StockCar sc = storage.computeIfAbsent(model, __ -> new StockCar(ICar.NULL_CAR, 0));
+		
+		return sc.car;
+	}
+	
+	/**
+	 * @return Gets all cars in stock.
+	 * @throws RemoteException
+	 */
+	public List<ICar> getAllCars() throws RemoteException {
+		List<ICar> cars = new ArrayList<>();
+		for (StockCar sc : storage.values()) {
+			cars.add(sc.car);
+		}
+		return cars;
+	}
 
 	/**
 	 * @param model of the {@link ICar}
