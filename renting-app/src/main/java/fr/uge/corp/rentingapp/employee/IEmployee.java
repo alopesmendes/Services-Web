@@ -1,5 +1,6 @@
 package fr.uge.corp.rentingapp.employee;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import fr.uge.corp.ifscars.cars.ICar;
@@ -14,7 +15,7 @@ import fr.uge.corp.ifscars.observe.IObservateur;
  * @version 1.8
  *
  */
-public interface IEmployee {
+public interface IEmployee extends Remote {
 	
 	/**
 	 * @return Getter for id.
