@@ -15,18 +15,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.uge.corp.ifscars.cars.ICar;
-import fr.uge.corp.ifscars.cars.Storage;
+import fr.uge.corp.ifscars.cars.IStorage;
 import fr.uge.corp.ifscars.observe.IObservateur;
 
-@SuppressWarnings("serial")
 public class RentingService extends UnicastRemoteObject implements IRentingService {
-	private final Storage storage;
+	private final IStorage storage;
 	private final Map<String, Queue<Long>> rentingQueue;
 	private final List<IObservateur> observateurs;
 	private final Set<ICar> carsRented;
 	private static final Logger logger = Logger.getLogger(RentingService.class.getName());
 
-	public RentingService(Storage storage) throws RemoteException {
+	public RentingService(IStorage storage) throws RemoteException {
 		Objects.requireNonNull(storage);
 		this.storage = storage;
 		rentingQueue = new HashMap<>();

@@ -71,7 +71,6 @@ public interface ICar extends Remote {
 	 * @version 1.8
 	 *
 	 */
-	@SuppressWarnings("serial")
 	static class NullCar extends UnicastRemoteObject implements ICar {
 		
 		private NullCar() throws RemoteException {

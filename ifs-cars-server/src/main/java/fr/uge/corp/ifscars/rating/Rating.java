@@ -15,7 +15,6 @@ import fr.uge.corp.ifscars.cars.ICar;
  * @version 1.8
  *
  */
-@SuppressWarnings("serial")
 public class Rating extends UnicastRemoteObject implements Remote{
 	private final double rating;
 	private final double condition;

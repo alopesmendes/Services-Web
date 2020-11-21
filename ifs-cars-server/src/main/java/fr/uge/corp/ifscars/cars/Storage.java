@@ -1,6 +1,5 @@
 package fr.uge.corp.ifscars.cars;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -19,8 +18,7 @@ import java.util.StringJoiner;
  * @version 1.8
  * 
  */
-@SuppressWarnings("serial")
-public class Storage extends UnicastRemoteObject implements Remote {
+public class Storage extends UnicastRemoteObject implements IStorage {
 
 	static class StockCar {
 		private final ICar car;
@@ -47,13 +45,7 @@ public class Storage extends UnicastRemoteObject implements Remote {
 		storage = new HashMap<>();
 	}
 
-	/**
-	 * Adds a car and it's quantity from the car model.
-	 * If the car already exists in the storage will increase it's quantity.
-	 * @param car the {@link ICar}
-	 * @param quantity the number of {@link ICar}
-	 * @throws RemoteException
-	 */
+	@Override
 	public void add(ICar car, int quantity) throws RemoteException{
 		Objects.requireNonNull(car);
 		if (quantity <= 0) {
@@ -65,13 +57,8 @@ public class Storage extends UnicastRemoteObject implements Remote {
 	}
 
 
-	/**
-	 * Getter for {@link ICar} from model.
-	 * @param model of the {@link ICar}
-	 * @return the {@link ICar} from it's model.
-	 * @throws RemoteException
-	 */
-	public ICar take(String model) throws RemoteException{
+	@Override
+	public ICar take(String model) throws RemoteException {
 		Objects.requireNonNull(model);
 		StockCar sc = storage.computeIfAbsent(model, __ -> new StockCar(ICar.NULL_CAR, 0));
 
@@ -86,11 +73,7 @@ public class Storage extends UnicastRemoteObject implements Remote {
 		return storage.get(model).car;
 	}
 	
-	/**
-	 * @param model
-	 * @return Getter of car from model.
-	 * @throws RemoteException
-	 */
+	@Override
 	public ICar get(String model) throws RemoteException {
 		Objects.requireNonNull(model);
 		StockCar sc = storage.computeIfAbsent(model, __ -> new StockCar(ICar.NULL_CAR, 0));
@@ -98,10 +81,7 @@ public class Storage extends UnicastRemoteObject implements Remote {
 		return sc.car;
 	}
 	
-	/**
-	 * @return Gets all cars in stock.
-	 * @throws RemoteException
-	 */
+	@Override
 	public List<ICar> getAllCars() throws RemoteException {
 		List<ICar> cars = new ArrayList<>();
 		for (StockCar sc : storage.values()) {
@@ -110,11 +90,7 @@ public class Storage extends UnicastRemoteObject implements Remote {
 		return cars;
 	}
 
-	/**
-	 * @param model of the {@link ICar}
-	 * @return true if the model exists in the storage.
-	 * @throws RemoteException
-	 */
+	@Override
 	public boolean exists(String model) throws RemoteException{
 		Objects.requireNonNull(model);
 

@@ -16,7 +16,6 @@ import fr.uge.corp.ifscars.rating.Rating;
  * @version 1.8
  *
  */
-@SuppressWarnings("serial")
 public class Car extends UnicastRemoteObject implements ICar {
 	private final String model;
 	private final double price;
