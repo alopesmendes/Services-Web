@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,11 +52,12 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 
 	@Override
 	public ICar[] getAllCars() throws RemoteException {
-		List<ICar> cs = storage.getAllCars();
+		Set<ICar> cs = ratings.keySet();
 		ICar[] cars = new ICar[cs.size()];
-		for (int i = 0; i < cs.size(); i++) {
-			if (ratings.containsKey(cs.get(i))) {
-				cars[i] = cs.get(i);
+		int i = 0;
+		for (ICar c : cs) {
+			if (storage.available(c.getModel())) {
+				cars[i++] = c;
 			}
 		}
 		return cars;

@@ -20,8 +20,17 @@ public interface IRentingService extends Remote {
 	
 	
 	
+	/**
+	 * @param model of the {@link ICar}
+	 * @return Gets a {@link ICar} of this model.
+	 * @throws RemoteException
+	 */
 	ICar getCar(String model) throws RemoteException;
 	
+	/**
+	 * @return An array of all cars available.
+	 * @throws RemoteException
+	 */
 	ICar[] getAllCars() throws RemoteException;
 		
 	/**
@@ -33,12 +42,37 @@ public interface IRentingService extends Remote {
 	 */
 	double getCarPrice(String model) throws RemoteException;
 	
+	/**
+	 * Receives a renting request and notify's the server.
+	 * The server will give the client the car if it's available.
+	 * @param client that request the {@link ICar}.
+	 * @param model of the {@link ICar}.
+	 * @throws RemoteException
+	 */
 	void receiveCarRentingRequest(IClient client, String model) throws RemoteException;
 	
+	/**
+	 * Receives a return request and notify's the server.
+	 * The server will take back the {@link ICar} with it's {@link IRating}.
+	 * And if there are {@link IClient} waiting for the {@link ICar} it will notify them.
+	 * @param client that return the {@link ICar}
+	 * @param car returned.
+	 * @param rating of the {@link ICar}
+	 * @throws RemoteException
+	 */
 	void receiveCarReturnRequest(IClient client, ICar car, IRating rating) throws RemoteException;
 	
+	/**
+	 * @param car 
+	 * @return Display's all of the {@link IRating}.
+	 * @throws RemoteException
+	 */
 	String displayRatings(ICar car) throws RemoteException;
 		
+	/**
+	 * @return Display of the renting service.
+	 * @throws RemoteException
+	 */
 	String display() throws RemoteException;
 	
 	
