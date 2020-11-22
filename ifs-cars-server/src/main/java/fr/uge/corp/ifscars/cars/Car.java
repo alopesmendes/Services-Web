@@ -2,11 +2,7 @@ package fr.uge.corp.ifscars.cars;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
-import fr.uge.corp.ifscars.rating.Rating;
 
 /**
  * The class Car implements {@link ICar}.
@@ -19,20 +15,23 @@ import fr.uge.corp.ifscars.rating.Rating;
 public class Car extends UnicastRemoteObject implements ICar {
 	private final String model;
 	private final double price;
-	private final List<Rating> ratings;
+	private final long id;
 	
-	public Car(String model, double price) throws RemoteException{
+	public Car(String model, long id, double price) throws RemoteException{
 		Objects.requireNonNull(model);
 		if (price <= 0) {
-			throw new IllegalArgumentException("price is equal or inferior to 0");
+			throw new IllegalArgumentException("price <= 0");
+		}
+		if (id < 0) {
+			throw new IllegalArgumentException("id < 0");
 		}
 		this.model = model;
 		this.price = price;
-		ratings = new ArrayList<Rating>();
+		this.id = id;
 	}
 	
 	@Override
-	public String getModel() throws RemoteException{
+	public String getModel() throws RemoteException {
 		return model;
 	}
 
@@ -41,37 +40,28 @@ public class Car extends UnicastRemoteObject implements ICar {
 		return price;
 	}
 
+	@Override
+	public String display() throws RemoteException{
+		return model+":"+id;
+	}
 
 	@Override
-	public Rating[] ratings() throws RemoteException {
-		Rating[] rs = new Rating[ratings.size()];
-		for (int i = 0; i < ratings.size(); i++) {
-			rs[i] = ratings.get(i);
+	public long getId() throws RemoteException{
+		return id;
+	}
+	
+	@Override
+	public int hashCode() {
+		return model.hashCode() ^ Long.hashCode(id) ^ Double.hashCode(price);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Car)) {
+			return false;
 		}
-		return rs;
-	}
-
-
-	@Override
-	public Rating averageRating() throws RemoteException {
-		double sumR = 0;
-		double sumC = 0;
-		for (Rating r : ratings) {
-			sumR += r.getRating();
-			sumC += r.getCondition();
-		}
-		return new Rating(sumR / ratings.size(), sumC / ratings.size());
-	}
-
-	@Override
-	public void addRating(double rating, double condition) throws RemoteException {
-		ratings.add(new Rating(rating, condition));
-		
-	}
-
-	@Override
-	public String display() throws RemoteException {
-		return model + " " + averageRating().display();
+		Car car = (Car) obj;
+		return id == car.id && price == car.price && car.model.equals(model);
 	}
 
 }

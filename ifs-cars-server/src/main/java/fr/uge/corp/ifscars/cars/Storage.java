@@ -1,11 +1,11 @@
 package fr.uge.corp.ifscars.cars;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -18,96 +18,88 @@ import java.util.StringJoiner;
  * @version 1.8
  * 
  */
-public class Storage extends UnicastRemoteObject implements IStorage {
+public class Storage {
 
-	static class StockCar {
-		private final ICar car;
-		private int quantity;
-
-		/**
-		 * Constructs that stocks a car and its quantity.
-		 * @param car the {@link ICar}.
-		 * @param quantity the number of {@link ICar} available.
-		 */
-		public StockCar(ICar car, int quantity) {
-			this.car = car;
-			this.quantity = quantity;
-		}
-	}
-
-	private final Map<String, StockCar> storage;
+	private final Map<String, Map<ICar, Boolean>> storage;
 
 	/**
 	 * Constructs a empty storage.
 	 * @throws RemoteException
 	 */
-	public Storage() throws RemoteException {
+	public Storage()  {
 		storage = new HashMap<>();
 	}
 
-	@Override
-	public void add(ICar car, int quantity) throws RemoteException{
+	public void add(ICar car) throws RemoteException {
 		Objects.requireNonNull(car);
-		if (quantity <= 0) {
-			throw new IllegalArgumentException("quantity is equal or inferior to 0.");
-		}
-
-		storage.merge(car.getModel(), new StockCar(car, quantity), (a, b) -> new StockCar(car, a.quantity + b.quantity));
-
+		Map<ICar, Boolean> stock = storage.computeIfAbsent(car.getModel(), __ -> new HashMap<>());
+		stock.put(car, true);
 	}
 
 
-	@Override
-	public ICar take(String model) throws RemoteException {
-		Objects.requireNonNull(model);
-		StockCar sc = storage.computeIfAbsent(model, __ -> new StockCar(ICar.NULL_CAR, 0));
-
-		if (sc.car.isNull()) {
-			return ICar.NULL_CAR;
+	public ICar take(ICar car) throws RemoteException {
+		Objects.requireNonNull(car);
+		if (!storage.containsKey(car.getModel())) {
+			throw new IllegalArgumentException("does not exist in storage");
 		}
-
-		if (sc.quantity - 1 < 0) {
-			return ICar.NULL_CAR;
+		if (car != null) {
+			Map<ICar, Boolean> sc = storage.get(car.getModel());
+			sc.put(car, false);
+			storage.put(car.getModel(), sc);
 		}
-		sc.quantity--;
-		return storage.get(model).car;
+		return car;
 	}
 	
-	@Override
-	public ICar get(String model) throws RemoteException {
+	public ICar get(String model) {
 		Objects.requireNonNull(model);
-		StockCar sc = storage.computeIfAbsent(model, __ -> new StockCar(ICar.NULL_CAR, 0));
-		
-		return sc.car;
+		if (!storage.containsKey(model)) {
+			return null;
+		}
+		return storage.get(model).keySet().stream().findFirst().get();
 	}
 	
-	@Override
-	public List<ICar> getAllCars() throws RemoteException {
+	public List<ICar> getAllCars()  {
 		List<ICar> cars = new ArrayList<>();
-		for (StockCar sc : storage.values()) {
-			cars.add(sc.car);
+		for (Map<ICar, Boolean> sc : storage.values()) {
+			for (ICar car : sc.keySet()) {
+				cars.add(car);
+			}
 		}
 		return cars;
 	}
 
-	@Override
-	public boolean exists(String model) throws RemoteException{
+	public boolean exists(String model) {
 		Objects.requireNonNull(model);
-
-		return !storage.getOrDefault(model, new StockCar(ICar.NULL_CAR, 0)).car.isNull();
-
+		return storage.containsKey(model);
 	}
 
-	public String display() throws RemoteException{
+	public String display() throws RemoteException {
 		StringJoiner sj = new StringJoiner(", ", "<", ">");
-		for (StockCar sc : storage.values()) {
-
-			sj.add(sc.car.getModel() +":"+ sc.quantity);
-
+		for (Map<ICar, Boolean> sc : storage.values()) {
+			for (ICar car : sc.keySet()) {
+				sj.add(car.display());
+			}
 		}
 		return sj.toString();	
 	}
 
+	public boolean available(String model)  {
+		for (boolean availables : storage.getOrDefault(model, new HashMap<ICar, Boolean>()).values()) {
+			if (availables) {
+				return true;
+			}
+		}
+		return false;
+	}
 
+	public List<ICar> getAvailableCars(String model) {
+		List<ICar> cars = new ArrayList<ICar>();
+		for (Entry<ICar, Boolean> car : storage.get(model).entrySet()) {
+			if (car.getValue()) {
+				cars.add(car.getKey());
+			}
+		}
+		return cars;
+	}
 
 }

@@ -4,138 +4,110 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.uge.corp.ifscars.cars.ICar;
-import fr.uge.corp.ifscars.cars.IStorage;
-import fr.uge.corp.ifscars.observe.IObservateur;
+import fr.uge.corp.ifscars.cars.Storage;
+import fr.uge.corp.ifscars.rating.IRating;
+import fr.uge.corp.rentingapp.client.IClient;
 
 public class RentingService extends UnicastRemoteObject implements IRentingService {
-	private final IStorage storage;
-	private final Map<String, Queue<Long>> rentingQueue;
-	private final List<IObservateur> observateurs;
-	private final Set<ICar> carsRented;
+	private final Storage storage;
+	private final Map<String, Map<Long, IClient>> waitingRequests;
+	private final Map<ICar, List<IRating>> ratings;
 	private static final Logger logger = Logger.getLogger(RentingService.class.getName());
 
-	public RentingService(IStorage storage) throws RemoteException {
+	public RentingService(Storage storage) throws RemoteException {
 		Objects.requireNonNull(storage);
 		this.storage = storage;
-		rentingQueue = new HashMap<>();
-		observateurs = new ArrayList<>();
-		carsRented = new HashSet<>();
+		waitingRequests = new HashMap<>();
+		ratings=new HashMap<>();
 	}
 
 	@Override
 	public String display() throws RemoteException {
 		return storage.display();
 	}
-	
-	private ICar giveCar(long id, String model, boolean condition) throws RemoteException {
-		if (!condition) {
-			return ICar.NULL_CAR;
-		}
-		Queue<Long> queue = rentingQueue.computeIfAbsent(model, __ -> new LinkedBlockingQueue<>());
-		
-		if (queue.size() > 0) {
-			ICar car = ICar.NULL_CAR;
-			if (id == queue.peek()) {
-				queue.poll();
-				car = storage.take(model);
-				carsRented.add(car);
-				return car;
-			} else {
-				return car;
-			}
-		}
-		return storage.take(model);
-	}
-	
-	private ICar waitCar(long id, String model, boolean condition) {
-		if (!condition) {
-			return ICar.NULL_CAR;
-		}
-		Queue<Long> queue = rentingQueue.computeIfAbsent(model, __ -> new LinkedBlockingQueue<>());
-		if (!queue.contains(id)) {
-			queue.offer(id);
-			logger.log(Level.INFO, queue.toString());
-		}
-		
-		return ICar.NULL_CAR;
-	}
-	
-	@Override
-	public void notifyObservateurs() throws RemoteException {
-		for (IObservateur obs : observateurs) {
-			obs.notifyChange(this);
-		}
-	}
-	
-	@Override
-	public ICar rentCar(long id, String model, boolean condition) throws RemoteException {
-		Objects.requireNonNull(model);
-		ICar car;
-		switch (getStatus(model)) {
-			case Give: 
-				car = giveCar(id, model, condition);
-				break;
-			case Wait: 
-				car = waitCar(id, model, condition);
-				break;
-			case None: default: 
-				car =  ICar.NULL_CAR;
-				break;
-		}
-		return car;
-		
-	}
 
 	@Override
 	public double getCarPrice(String model) throws RemoteException {
-		ICar car = storage.take(model);
-		if (car.isNull()) {
+		ICar car = storage.get(model);
+		if (car==null) {
 			return 0;
 		}
 		return car.getPrice() / 2;
 	}
 
-
 	@Override
-	public void returnCar(ICar car) throws RemoteException {
-		Objects.requireNonNull(car);
-		if (car.isNull()) {
-			return;
+	public ICar[] getAllCars() throws RemoteException {
+		List<ICar> cs = storage.getAllCars();
+		ICar[] cars = new ICar[cs.size()];
+		for (int i = 0; i < cs.size(); i++) {
+			if (ratings.containsKey(cs.get(i))) {
+				cars[i] = cs.get(i);
+			}
 		}
-		storage.add(car, 1);
-		//notifyObservateurs();
-
+		return cars;
 	}
-
+	
+	private void processQueue(IClient client, ICar car, RentStatus status) throws RemoteException {
+		IClient c = client;
+		if (storage.available(car.getModel())) {
+			if (status == RentStatus.Wait) {
+				Optional<Long> shortest = waitingRequests.get(car.getModel()).keySet().stream().min(Long::compare);
+				if (shortest.isPresent()) {
+					status = RentStatus.Give;
+					Map<Long, IClient> rs = waitingRequests.get(car.getModel());
+					c = rs.get(shortest.get());
+					rs.remove(shortest.get());
+					waitingRequests.put(car.getModel(), rs);
+				}
+			}
+			if (status == RentStatus.Give) {
+				ICar carAvailable = storage.getAvailableCars(car.getModel()).get(0);
+				c.receiveCar(carAvailable);
+				storage.take(carAvailable);
+			}
+		}		
+	}
+	
 	@Override
-	public RentStatus getStatus(String model) throws RemoteException {
-		ICar car = storage.take(model);
-		
+	public void receiveCarRentingRequest(IClient client, String model) throws RemoteException {
+		Objects.requireNonNull(client);
+		Objects.requireNonNull(model);
+		logger.log(Level.INFO, "Rent request for model:"+model);
 		if (!storage.exists(model)) {
-			return RentStatus.None;
-		} else if (car.isNull()) {
-			return RentStatus.Wait;
-		} else {
-			storage.add(car, 1);
-			return RentStatus.Give;
+			client.refusedRequest("The following model:"+model+" does not exist");
 		}
+		RentStatus status = RentStatus.Give;
+		if (!storage.available(model)) {
+			client.refusedRequest("Wait ...");
+			Map<Long, IClient> map = new HashMap<Long, IClient>();
+			map.put(System.currentTimeMillis(), client);
+			waitingRequests.put(model, map);
+			status = RentStatus.Wait;
+		}
+		
+		processQueue(client, storage.get(model), status);		
 	}
 
 	@Override
-	public synchronized void subscribe(IObservateur obs) throws RemoteException {
-		Objects.requireNonNull(obs);
-		observateurs.add(obs);
+	public void receiveCarReturnRequest(IClient client, ICar car, IRating rating) throws RemoteException {
+		Objects.requireNonNull(client);
+		Objects.requireNonNull(rating);
+		Objects.requireNonNull(car);
+		logger.log(Level.INFO, "Return request for car:["+car.display()+"] with a rating of ["+rating.display()+"]");
+		ratings.computeIfAbsent(car, __ -> new ArrayList<>()).add(rating);
+		storage.add(car);
+		client.returnCar(car);
+		RentStatus status = waitingRequests.get(car.getModel()) == null || waitingRequests.get(car.getModel()).size() == 0?RentStatus.None:RentStatus.Wait;
+		processQueue(client, car, status);
 		
 	}
 
@@ -146,13 +118,14 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 	}
 
 	@Override
-	public ICar[] getAllCars() throws RemoteException {
-		List<ICar> cs = storage.getAllCars();
-		ICar[] cars = new ICar[cs.size()];
-		for (int i = 0; i < cs.size(); i++) {
-			cars[i] = cs.get(i);
+	public String displayRatings(ICar car) throws RemoteException {
+		Objects.requireNonNull(car);
+		List<IRating> rs =  ratings.getOrDefault(car, new ArrayList<>());
+		StringJoiner sj = new StringJoiner(", ", "[", "]");
+		for (IRating rating : rs) {
+			sj.add(rating.display());
 		}
-		return cars;
+		return sj.toString();
 	}
 
 }

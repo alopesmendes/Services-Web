@@ -4,8 +4,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import fr.uge.corp.ifscars.cars.ICar;
-import fr.uge.corp.ifscars.observe.IObserve;
-import fr.uge.corp.ifscars.rating.Rating;
+import fr.uge.corp.ifscars.rating.IRating;
+import fr.uge.corp.rentingapp.client.IClient;
 
 /**
  * <p>The interface IRentingService will be the renting service.</p>
@@ -16,23 +16,11 @@ import fr.uge.corp.ifscars.rating.Rating;
  * @version 1.8
  *
  */
-public interface IRentingService extends Remote, IObserve {
+public interface IRentingService extends Remote {
 	
 	public static enum RentStatus {
 		None, Wait, Give
 	}
-	
-	/**
-	 * The method will verify if the car exists firstly.
-	 * Then it will verify it there's the certain model still in stock and return it.
-	 * Otherwise it return the NullCar and puts the id on the waiting list.
-	 * @param id asking for the {@link ICar}
-	 * @param model of the {@link ICar}
-	 * @param money deposit for the {@link ICar}
-	 * @return the car if all conditions are met otherwise NullCar.
-	 * @throws RemoteException
-	 */
-	ICar rentCar(long id, String model, boolean condition) throws RemoteException;
 	
 	ICar getCar(String model) throws RemoteException;
 	
@@ -47,29 +35,14 @@ public interface IRentingService extends Remote, IObserve {
 	 */
 	double getCarPrice(String model) throws RemoteException;
 	
+	void receiveCarRentingRequest(IClient client, String model) throws RemoteException;
 	
-	/**
-	 * Will get the status of the following model.
-	 * @param model of {@link ICar}
-	 * @return Getter for status from model
-	 * @throws RemoteException
-	 */
-	RentStatus getStatus(String model) throws RemoteException;
-		
-	/**
-	 * Returns a rent car.
-	 * @param car the {@link ICar} returned.
-	 * @throws RemoteException
-	 */
-	void returnCar(ICar car) throws RemoteException;
+	void receiveCarReturnRequest(IClient client, ICar car, IRating rating) throws RemoteException;
 	
-	/**
-	 * Notify's all observateurs of a change.
-	 * @throws RemoteException
-	 */
-	void notifyObservateurs() throws RemoteException;
-	
+	String displayRatings(ICar car) throws RemoteException;
 		
 	String display() throws RemoteException;
+	
+	
 	
 }

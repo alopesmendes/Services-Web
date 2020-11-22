@@ -1,9 +1,7 @@
 package fr.uge.corp.ifscars.rating;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 
 import fr.uge.corp.ifscars.cars.ICar;
 
@@ -15,8 +13,7 @@ import fr.uge.corp.ifscars.cars.ICar;
  * @version 1.8
  *
  */
-@SuppressWarnings("serial")
-public class Rating extends UnicastRemoteObject implements Remote{
+public class Rating extends UnicastRemoteObject implements IRating{
 	private final double rating;
 	private final double condition;
 	
@@ -37,40 +34,19 @@ public class Rating extends UnicastRemoteObject implements Remote{
 		this.condition = condition;
 	}
 	
-	/**
-	 * @return Getter for rating
-	 * @throws RemoteException
-	 */
+	@Override
 	public double getRating() throws RemoteException {
 		return rating;
 	}
 
 
 
-	/**
-	 * @return Getter for condition
-	 * @throws RemoteException
-	 */
+	@Override
 	public double getCondition() throws RemoteException {
 		return condition;
 	}
 	
-	
-	/**
-	 * @param ratings the list of Ratings.
-	 * @return the average Rating from the list.
-	 * @throws RemoteException
-	 */
-	public static Rating average(List<Rating> ratings) throws RemoteException {
-		double sumR = 0;
-		double sumC = 0;
-		for (Rating r : ratings) {
-			sumR += r.rating;
-			sumC += r.condition;
-		}
-		return new Rating(sumR / ratings.size(), sumC / ratings.size());
-	}
-	
+	@Override
 	public String display() throws RemoteException {
 		return "rating:"+rating+"/5 , condition:"+condition+"/5";
 	}
