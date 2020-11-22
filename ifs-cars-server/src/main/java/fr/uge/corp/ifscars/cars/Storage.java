@@ -1,8 +1,11 @@
 package fr.uge.corp.ifscars.cars;
 
-import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -15,63 +18,137 @@ import java.util.StringJoiner;
  * @version 1.8
  * 
  */
-@SuppressWarnings("serial")
-public class Storage implements Serializable {
-	
-	static class StockCar {
-		private final ICar car;
-		private int quantity;
-		
-		/**
-		 * Constructs that stocks a car and its quantity.
-		 * @param car the {@link ICar}.
-		 * @param quantity the number of {@link ICar} available.
-		 */
-		public StockCar(ICar car, int quantity) {
-			this.car = car;
-			this.quantity = quantity;
-		}
-	}
-	
-	private final Map<String, StockCar> storage;
+public class Storage {
+
+	private final Map<String, Map<ICar, Boolean>> storage;
 
 	/**
 	 * Constructs a empty storage.
+	 * @throws RemoteException
 	 */
 	public Storage() {
 		storage = new HashMap<>();
 	}
-	
+
 	/**
-	 * Adds a car and it's quantity from the car model.
-	 * If the car already exists in the storage will increase it's quantity.
-	 * @param car the {@link ICar}
-	 * @param quantity the number of {@link ICar}
+	 * Adds a car in the storage.
+	 * @param car added.
+	 * @throws RemoteException
 	 */
-	public void add(ICar car, int quantity) {
+	public void add(ICar car) throws RemoteException {
 		Objects.requireNonNull(car);
-		if (quantity <= 0) {
-			throw new IllegalArgumentException("quantity is equal or inferior to 0.");
+		Map<ICar, Boolean> stock = storage.computeIfAbsent(car.getModel(), __ -> new HashMap<>());
+		stock.put(car, true);
+	}
+
+
+	/**
+	 * Takes the {@link ICar} from the storage.
+	 * @param car taken
+	 * @return Return the taken {@link ICar}
+	 * @throws RemoteException
+	 */
+	public ICar take(ICar car) throws RemoteException {
+		Objects.requireNonNull(car);
+		if (!storage.containsKey(car.getModel())) {
+			throw new IllegalArgumentException("does not exist in storage");
 		}
-		storage.merge(car.getModel(), new StockCar(car, quantity), (a, b) -> new StockCar(car, a.quantity + b.quantity));
+		if (car != null) {
+			Map<ICar, Boolean> sc = storage.get(car.getModel());
+			sc.put(car, false);
+			storage.put(car.getModel(), sc);
+		}
+		return car;
 	}
 	
 	/**
 	 * @param model of the {@link ICar}
-	 * @return the {@link ICar} from it's model.
+	 * @return Gets a {@link ICar} from the model.
 	 */
 	public ICar get(String model) {
-		return storage.get(model).car;
+		Objects.requireNonNull(model);
+		if (!storage.containsKey(model)) {
+			return null;
+		}
+		return storage.get(model).keySet().stream().findFirst().get();
 	}
 	
-	public String display() {
+	/**
+	 * @return All cars in storage.
+	 */
+	public List<ICar> getAllCars()  {
+		List<ICar> cars = new ArrayList<>();
+		for (Map<ICar, Boolean> sc : storage.values()) {
+			for (ICar car : sc.keySet()) {
+				cars.add(car);
+			}
+		}
+		return cars;
+	}
+
+	/**
+	 * @param model of the {@link ICar}
+	 * @return Verify's if the car is in the storage.
+	 */
+	public boolean exists(String model) {
+		Objects.requireNonNull(model);
+		return storage.containsKey(model);
+	}
+
+	/**
+	 * @return Display's the storage.
+	 * @throws RemoteException
+	 */
+	public String display() throws RemoteException {
 		StringJoiner sj = new StringJoiner(", ", "<", ">");
-		for (StockCar sc : storage.values()) {
-			sj.add(sc.car.getModel() +":"+ sc.quantity);
+		for (Map<ICar, Boolean> sc : storage.values()) {
+			for (ICar car : sc.keySet()) {
+				sj.add(car.display());
+			}
 		}
 		return sj.toString();	
 	}
+
+	/**
+	 * @param model of the {@link ICar}.
+	 * @return Verify's if the model of a {@link ICar} is available.
+	 */
+	public boolean available(String model)  {
+		if (!storage.containsKey(model)) {
+			return false;
+		}
+		for (boolean availables : storage.get(model).values()) {
+			if (availables) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
-	
-	
+	/**
+	 * @param car a {@link ICar}
+	 * @return Verify's if the {@link ICar} is available.
+	 * @throws RemoteException
+	 */
+	public boolean available(ICar car) throws RemoteException {
+		if (!storage.containsKey(car.getModel())) {
+			return false;
+		}
+		return storage.get(car.getModel()).containsKey(car);
+	}
+
+	/**
+	 * @param model of the {@link ICar}
+	 * @return A List of all available {@link ICar} from model.
+	 */
+	public List<ICar> getAvailableCars(String model) {
+		List<ICar> cars = new ArrayList<ICar>();
+		for (Entry<ICar, Boolean> car : storage.get(model).entrySet()) {
+			if (car.getValue()) {
+				cars.add(car.getKey());
+			}
+		}
+		return cars;
+	}
+
 }
