@@ -18,9 +18,7 @@ import fr.uge.corp.rentingapp.client.IClient;
  */
 public interface IRentingService extends Remote {
 	
-	public static enum RentStatus {
-		None, Wait, Give
-	}
+	
 	
 	ICar getCar(String model) throws RemoteException;
 	

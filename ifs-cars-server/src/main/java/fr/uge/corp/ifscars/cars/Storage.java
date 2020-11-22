@@ -26,7 +26,7 @@ public class Storage {
 	 * Constructs a empty storage.
 	 * @throws RemoteException
 	 */
-	public Storage()  {
+	public Storage() {
 		storage = new HashMap<>();
 	}
 

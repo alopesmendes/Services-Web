@@ -18,6 +18,11 @@ import fr.uge.corp.ifscars.rating.IRating;
 import fr.uge.corp.rentingapp.client.IClient;
 
 public class RentingService extends UnicastRemoteObject implements IRentingService {
+	
+	public static enum RentStatus {
+		None, Wait, Give
+	}
+	
 	private final Storage storage;
 	private final Map<String, Map<Long, IClient>> waitingRequests;
 	private final Map<ICar, List<IRating>> ratings;
