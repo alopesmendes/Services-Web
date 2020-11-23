@@ -8,8 +8,16 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>bank</artifactId>
-	
-	<properties>
-		<jar.mainClass>fr.uge.corp.bank.Main</jar.mainClass>
-	</properties>
+	<packaging>war</packaging>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<outputDirectory>build/classes</outputDirectory>
+		<plugins>
+			<plugin>
+			    <groupId>org.apache.tomcat.maven</groupId>
+			    <artifactId>tomcat7-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 </project>
