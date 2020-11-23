@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +33,7 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 	public RentingService(Storage storage) throws RemoteException {
 		Objects.requireNonNull(storage);
 		this.storage = storage;
-		waitingRequests = new HashMap<>();
+		waitingRequests = new ConcurrentHashMap<>();
 		ratings=new HashMap<>();
 	}
 
@@ -95,7 +96,7 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 		RentStatus status = RentStatus.Give;
 		if (!storage.available(model)) {
 			client.refusedRequest("Wait ...");
-			Map<Long, IClient> map = new HashMap<Long, IClient>();
+			Map<Long, IClient> map = waitingRequests.computeIfAbsent(model, __ -> new ConcurrentHashMap<>());
 			map.put(System.currentTimeMillis(), client);
 			waitingRequests.put(model, map);
 			status = RentStatus.Wait;
