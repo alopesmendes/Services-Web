@@ -17,7 +17,7 @@ public class Command {
 		Objects.requireNonNull(service);
 		Objects.requireNonNull(client);
 		String[] subcommand = command.split(" ");
-		if (!verifyCommand(subcommand.length == 3, "@return car rating condition")) {
+		if (!verifyCommand(subcommand.length == 3, "@return [car:ICar] [rating:Double] [condition:Double]")) {
 			return;
 		}
 		ICar car = client.getCar(subcommand[0]);
@@ -36,7 +36,18 @@ public class Command {
 		Objects.requireNonNull(command);
 		Objects.requireNonNull(service);
 		Objects.requireNonNull(client);
-		service.receiveCarRentingRequest(client, command);
+		String[] subcommand = command.split(" ", 2);
+		if (!verifyCommand(subcommand.length == 2, "@request [carId:long] [model:string]")) {
+			return;
+		}
+		service.receiveCarRentingRequest(client, subcommand[1], Long.parseLong(subcommand[0]));
+	}
+	
+	private static void commandShowCarsFromModel(String command, IRentingService service, IClient client) throws RemoteException {
+		Objects.requireNonNull(command);
+		Objects.requireNonNull(service);
+		Objects.requireNonNull(client);
+		logger.log(Level.INFO, service.displayCarsFromModel(command));
 	}
 	
 	private static void commandRating(String command, IRentingService service, IClient client) throws RemoteException {
@@ -90,6 +101,11 @@ public class Command {
 			case "@return":
 				commandReturn(command[1], service, client);
 				break;
+			case "@show":
+				if (verifyCommand(command.length == 2, "@show [model:String]")) {
+					commandShowCarsFromModel(command[1], service, client);
+				}
+				break;
 			default:
 				break;
 		}
@@ -97,6 +113,7 @@ public class Command {
 	
 	public static boolean quit(String line) {
 		Objects.requireNonNull(line);
+		
 		return line.equals("@quit");
 	}
 }

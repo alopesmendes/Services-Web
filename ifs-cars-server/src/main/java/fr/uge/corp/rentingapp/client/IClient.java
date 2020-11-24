@@ -15,6 +15,14 @@ import fr.uge.corp.ifscars.cars.ICar;
  *
  */
 public interface IClient extends Remote {
+	
+	
+	/**
+	 * @return Getter for id.
+	 * @throws RemoteException
+	 */
+	long getId() throws RemoteException;
+	
 	/**
 	 * Notification of refused request.
 	 * @param msg explaining why the request was refused. 

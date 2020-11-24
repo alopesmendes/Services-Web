@@ -20,11 +20,6 @@ public class Client extends UnicastRemoteObject implements IClient {
 		this.id = id;
 		rentedCars = new HashMap<String, ICar>();
 	}
-	
-	@Override
-	public int hashCode() {
-		return Long.hashCode(id);
-	}
 
 	@Override
 	public void refusedRequest(String msg) throws RemoteException {
@@ -57,6 +52,11 @@ public class Client extends UnicastRemoteObject implements IClient {
 			sj.add(car.display());
 		}
 		return sj.toString();
+	}
+
+	@Override
+	public long getId() throws RemoteException {
+		return id;
 	}
 
 }

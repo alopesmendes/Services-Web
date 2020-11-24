@@ -20,17 +20,17 @@ public class Main {
 			IRentingService service = (IRentingService) Naming.lookup("rmi://localhost:1099/RentingServer");
 			IClient client = new Client(Long.parseLong(args[0]));
 			try (Scanner sc = new Scanner(System.in)) {
-				String[] command = new String[] {""};
 				while (true) {
 					if (sc.hasNextLine()) {
-						if (Command.quit(command[0])) {
-							break;
+						String line = sc.nextLine();
+						if (Command.quit(line)) {
+							logger.log(Level.INFO, "end of program");
+							return;
 						}					
-						Command.command(sc.nextLine(), service, client);
+						Command.command(line, service, client);
 					}
 				}
-				logger.log(Level.INFO, "end of program");
-			}			
+			}	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

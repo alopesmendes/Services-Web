@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * <p>The class Storage will stock all the {@link ICar} and the quantity.</p>
@@ -20,7 +19,26 @@ import java.util.StringJoiner;
  */
 public class Storage {
 
-	private final Map<String, Map<ICar, Boolean>> storage;
+	private static class StockCar {
+		private final ICar car;
+		private boolean available;
+
+		public StockCar(ICar car, boolean available) {
+			this.car = car;
+			this.available = available;
+		}
+
+		@Override
+		public String toString() {
+			try {
+				return car.display()+"->"+available;
+			} catch (RemoteException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	private final Map<String, Map<Long, StockCar>> storage;
 
 	/**
 	 * Constructs a empty storage.
@@ -37,8 +55,8 @@ public class Storage {
 	 */
 	public void add(ICar car) throws RemoteException {
 		Objects.requireNonNull(car);
-		Map<ICar, Boolean> stock = storage.computeIfAbsent(car.getModel(), __ -> new HashMap<>());
-		stock.put(car, true);
+		Map<Long, StockCar> stock = storage.computeIfAbsent(car.getModel(), __ -> new HashMap<>());
+		stock.put(car.getId(), new StockCar(car, true));
 	}
 
 
@@ -54,33 +72,49 @@ public class Storage {
 			throw new IllegalArgumentException("does not exist in storage");
 		}
 		if (car != null) {
-			Map<ICar, Boolean> sc = storage.get(car.getModel());
-			sc.put(car, false);
+			Map<Long, StockCar> sc = storage.get(car.getModel());
+			sc.put(car.getId(), new StockCar(car, false));
 			storage.put(car.getModel(), sc);
 		}
 		return car;
 	}
-	
+
 	/**
 	 * @param model of the {@link ICar}
 	 * @return Gets a {@link ICar} from the model.
 	 */
-	public ICar get(String model) {
+	public ICar getCar(String model, long id) {
 		Objects.requireNonNull(model);
 		if (!storage.containsKey(model)) {
 			return null;
 		}
-		return storage.get(model).keySet().stream().findFirst().get();
+		return storage.get(model).get(id).car;
 	}
 	
+	public List<ICar> getCarsModel(String model) {
+		Objects.requireNonNull(model);
+		if (!storage.containsKey(model)) {
+			return null;
+		}
+		return storage.get(model).values().stream().map(sc -> sc.car).collect(Collectors.toList());
+	}
+	
+	public ICar getModel(String model) {
+		Objects.requireNonNull(model);
+		if (!storage.containsKey(model)) {
+			return null;
+		}
+		return storage.get(model).values().stream().findFirst().get().car;
+	}
+
 	/**
 	 * @return All cars in storage.
 	 */
 	public List<ICar> getAllCars()  {
 		List<ICar> cars = new ArrayList<>();
-		for (Map<ICar, Boolean> sc : storage.values()) {
-			for (ICar car : sc.keySet()) {
-				cars.add(car);
+		for (Map<Long, StockCar> stocks : storage.values()) {
+			for (StockCar sc : stocks.values()) {
+				cars.add(sc.car);
 			}
 		}
 		return cars;
@@ -100,41 +134,57 @@ public class Storage {
 	 * @throws RemoteException
 	 */
 	public String display() throws RemoteException {
+		/*
 		StringJoiner sj = new StringJoiner(", ", "<", ">");
-		for (Map<ICar, Boolean> sc : storage.values()) {
-			for (ICar car : sc.keySet()) {
-				sj.add(car.display());
+		for (Map<Long, StockCar> stocks : storage.values()) {
+			for (StockCar car : stocks.values()) {
+				sj.add(car.toString());
 			}
-		}
-		return sj.toString();	
+		}*/
+		return storage.values().stream().
+				flatMap(x -> x.values().stream()).map(StockCar::toString).
+				collect(Collectors.joining(", ", "<", ">"));	
+	}
+	
+	public String displayStockCar(ICar car) throws RemoteException {
+		Objects.requireNonNull(car);
+		return car.display()+" available:"+storage.get(car.getModel()).get(car.getId()).available;
 	}
 
 	/**
 	 * @param model of the {@link ICar}.
 	 * @return Verify's if the model of a {@link ICar} is available.
 	 */
-	public boolean available(String model)  {
+	public boolean availableModel(String model)  {
+		/*
 		if (!storage.containsKey(model)) {
 			return false;
 		}
-		for (boolean availables : storage.get(model).values()) {
-			if (availables) {
+		
+		for (StockCar stockCar : storage.get(model).values()) {
+			if (stockCar.available) {
 				return true;
 			}
 		}
-		return false;
+		*/
+		return storage.containsKey(model) && storage.get(model).values().stream().anyMatch(p -> p.available);
 	}
 	
+	public boolean availableCar(ICar car) throws RemoteException {
+		return storage.containsKey(car.getModel()) && storage.get(car.getModel()).containsKey(car.getId())
+				&& storage.get(car.getModel()).get(car.getId()).available;
+	}
+
 	/**
 	 * @param car a {@link ICar}
 	 * @return Verify's if the {@link ICar} is available.
 	 * @throws RemoteException
 	 */
-	public boolean available(ICar car) throws RemoteException {
-		if (!storage.containsKey(car.getModel())) {
+	public boolean availableModel(ICar car) throws RemoteException {
+		if (!storage.containsKey(car.getModel()) || !storage.get(car.getModel()).containsKey(car.getId())) {
 			return false;
 		}
-		return storage.get(car.getModel()).containsKey(car);
+		return storage.get(car.getModel()).get(car.getId()).available;
 	}
 
 	/**
@@ -143,9 +193,9 @@ public class Storage {
 	 */
 	public List<ICar> getAvailableCars(String model) {
 		List<ICar> cars = new ArrayList<ICar>();
-		for (Entry<ICar, Boolean> car : storage.get(model).entrySet()) {
-			if (car.getValue()) {
-				cars.add(car.getKey());
+		for (StockCar stockCar : storage.get(model).values()) {
+			if (stockCar.available) {
+				cars.add(stockCar.car);
 			}
 		}
 		return cars;

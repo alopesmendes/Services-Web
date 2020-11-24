@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import fr.uge.corp.ifscars.cars.ICar;
 import fr.uge.corp.ifscars.cars.Storage;
@@ -26,7 +26,7 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 	}
 	
 	private final Storage storage;
-	private final Map<String, Map<Long, IClient>> waitingRequests;
+	private final Map<ICar, Map<Long, IClient>> waitingRequests;
 	private final Map<ICar, List<IRating>> ratings;
 	private static final Logger logger = Logger.getLogger(RentingService.class.getName());
 
@@ -44,7 +44,7 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 
 	@Override
 	public double getCarPrice(String model) throws RemoteException {
-		ICar car = storage.get(model);
+		ICar car = storage.getModel(model);
 		if (car==null) {
 			return 0;
 		}
@@ -57,7 +57,7 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 		ICar[] cars = new ICar[cs.size()];
 		int i = 0;
 		for (ICar c : cs) {
-			if (storage.available(c.getModel())) {
+			if (storage.availableModel(c.getModel())) {
 				cars[i++] = c;
 			}
 		}
@@ -66,43 +66,48 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 	
 	private void processQueue(IClient client, ICar car, RentStatus status) throws RemoteException {
 		IClient c = client;
-		if (storage.available(car.getModel())) {
+		if (storage.availableCar(car)) {
 			if (status == RentStatus.Wait) {
-				Optional<Long> shortest = waitingRequests.get(car.getModel()).keySet().stream().min(Long::compare);
+				Optional<Long> shortest = waitingRequests.get(car).keySet().stream().min(Long::compare);
 				if (shortest.isPresent()) {
 					status = RentStatus.Give;
-					Map<Long, IClient> rs = waitingRequests.get(car.getModel());
+					Map<Long, IClient> rs = waitingRequests.get(car);
 					c = rs.get(shortest.get());
 					rs.remove(shortest.get());
-					waitingRequests.put(car.getModel(), rs);
+					waitingRequests.put(car, rs);
 				}
 			}
 			if (status == RentStatus.Give) {
-				ICar carAvailable = storage.getAvailableCars(car.getModel()).get(0);
-				c.receiveCar(carAvailable);
-				storage.take(carAvailable);
+				c.receiveCar(car);
+				storage.take(car);
 			}
 		}		
 	}
 	
 	@Override
-	public void receiveCarRentingRequest(IClient client, String model) throws RemoteException {
+	public void receiveCarRentingRequest(IClient client, String model, long id) throws RemoteException {
 		Objects.requireNonNull(client);
 		Objects.requireNonNull(model);
 		logger.log(Level.INFO, "Rent request for model:"+model);
 		if (!storage.exists(model)) {
 			client.refusedRequest("The following model:"+model+" does not exist");
+			return;
+		}
+		ICar car = storage.getCar(model, id);
+		if (car == null) {
+			client.refusedRequest("The following model:"+model+" with the id:"+id+" does not exist");
+			return;
 		}
 		RentStatus status = RentStatus.Give;
-		if (!storage.available(model)) {
+		if (!storage.availableModel(model)) {
 			client.refusedRequest("Wait ...");
-			Map<Long, IClient> map = waitingRequests.computeIfAbsent(model, __ -> new ConcurrentHashMap<>());
+			Map<Long, IClient> map = waitingRequests.computeIfAbsent(car, __ -> new ConcurrentHashMap<>());
 			map.put(System.currentTimeMillis(), client);
-			waitingRequests.put(model, map);
+			waitingRequests.put(car, map);
 			status = RentStatus.Wait;
 		}
 		
-		processQueue(client, storage.get(model), status);		
+		processQueue(client, storage.getCar(model, id), status);		
 	}
 
 	@Override
@@ -114,7 +119,7 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 		ratings.computeIfAbsent(car, __ -> new ArrayList<>()).add(rating);
 		storage.add(car);
 		client.returnCar(car);
-		RentStatus status = waitingRequests.get(car.getModel()) == null || waitingRequests.get(car.getModel()).size() == 0?RentStatus.None:RentStatus.Wait;
+		RentStatus status = waitingRequests.get(car) == null || waitingRequests.get(car).size() == 0 ? RentStatus.None : RentStatus.Wait;
 		processQueue(client, car, status);
 		
 	}
@@ -122,18 +127,37 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 	@Override
 	public ICar getCar(String model) throws RemoteException {
 		Objects.requireNonNull(model);
-		return storage.get(model);
+		return storage.getModel(model);
 	}
 
 	@Override
 	public String displayRatings(ICar car) throws RemoteException {
 		Objects.requireNonNull(car);
+		/*
 		List<IRating> rs =  ratings.getOrDefault(car, new ArrayList<>());
 		StringJoiner sj = new StringJoiner(", ", "[", "]");
 		for (IRating rating : rs) {
 			sj.add(rating.display());
-		}
-		return sj.toString();
+		}*/
+		return ratings.getOrDefault(car, new ArrayList<IRating>()).stream().
+		map(arg0 -> {
+			try {
+				return arg0.display();
+			} catch (RemoteException e) {
+				throw new RuntimeException(e);
+			}
+		}).collect(Collectors.joining(", ", "[", "]"));
+	}
+
+	@Override
+	public String displayCarsFromModel(String model) throws RemoteException {
+		return storage.getCarsModel(model).stream().map(car -> {
+			try {
+				return storage.displayStockCar(car)+" ratings:"+displayRatings(car);
+			} catch (RemoteException e) {
+				throw new RuntimeException();
+			}
+		}).collect(Collectors.joining(", ", "{", "}"));
 	}
 
 }

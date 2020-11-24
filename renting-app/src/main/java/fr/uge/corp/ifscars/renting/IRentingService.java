@@ -47,9 +47,10 @@ public interface IRentingService extends Remote {
 	 * The server will give the client the car if it's available.
 	 * @param client that request the {@link ICar}.
 	 * @param model of the {@link ICar}.
+	 * @param id of the {@link ICar}.
 	 * @throws RemoteException
 	 */
-	void receiveCarRentingRequest(IClient client, String model) throws RemoteException;
+	void receiveCarRentingRequest(IClient client, String model, long id) throws RemoteException;
 	
 	/**
 	 * Receives a return request and notify's the server.
@@ -68,6 +69,13 @@ public interface IRentingService extends Remote {
 	 * @throws RemoteException
 	 */
 	String displayRatings(ICar car) throws RemoteException;
+	
+	/**
+	 * @param model
+	 * @return
+	 * @throws RemoteException
+	 */
+	String displayCarsFromModel(String model) throws RemoteException;
 		
 	/**
 	 * @return Display of the renting service.
