@@ -31,7 +31,7 @@ public class Storage {
 		@Override
 		public String toString() {
 			try {
-				return car.display()+"->"+available;
+				return car.display()+" available:"+available;
 			} catch (RemoteException e) {
 				throw new RuntimeException(e);
 			}
@@ -58,7 +58,18 @@ public class Storage {
 		Map<Long, StockCar> stock = storage.computeIfAbsent(car.getModel(), __ -> new HashMap<>());
 		stock.put(car.getId(), new StockCar(car, true));
 	}
-
+	
+	/**
+	 * Removes a car from the storage.
+	 * @param model of the {@link ICar}.
+	 * @param id of the {@link ICar}
+	 * @throws RemoteException
+	 */
+	public ICar remove(String model, long id) throws RemoteException {
+		Objects.requireNonNull(model);
+		StockCar stockCar = storage.computeIfAbsent(model, __ -> new HashMap<>()).remove(id);
+		return stockCar == null ? null : stockCar.car;
+	}
 
 	/**
 	 * Takes the {@link ICar} from the storage.
@@ -134,13 +145,7 @@ public class Storage {
 	 * @throws RemoteException
 	 */
 	public String display() throws RemoteException {
-		/*
-		StringJoiner sj = new StringJoiner(", ", "<", ">");
-		for (Map<Long, StockCar> stocks : storage.values()) {
-			for (StockCar car : stocks.values()) {
-				sj.add(car.toString());
-			}
-		}*/
+
 		return storage.values().stream().
 				flatMap(x -> x.values().stream()).map(StockCar::toString).
 				collect(Collectors.joining(", ", "<", ">"));	
@@ -156,17 +161,7 @@ public class Storage {
 	 * @return Verify's if the model of a {@link ICar} is available.
 	 */
 	public boolean availableModel(String model)  {
-		/*
-		if (!storage.containsKey(model)) {
-			return false;
-		}
 		
-		for (StockCar stockCar : storage.get(model).values()) {
-			if (stockCar.available) {
-				return true;
-			}
-		}
-		*/
 		return storage.containsKey(model) && storage.get(model).values().stream().anyMatch(p -> p.available);
 	}
 	

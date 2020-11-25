@@ -50,7 +50,7 @@ public interface IClient extends Remote {
 	 * @return a rented {@link ICar}
 	 * @throws RemoteException
 	 */
-	ICar getCar(String model) throws RemoteException;
+	ICar getCar(String model, long id) throws RemoteException;
 	
 	/**
 	 * @return Display's all currently rented cars.

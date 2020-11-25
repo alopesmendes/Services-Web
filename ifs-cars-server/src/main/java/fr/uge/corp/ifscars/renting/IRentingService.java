@@ -18,6 +18,12 @@ import fr.uge.corp.rentingapp.client.IClient;
  */
 public interface IRentingService extends Remote {
 	
+	/**
+	 * Allows a client to subcribe to the renting service.
+	 * @param id of client
+	 * @throws RemoteException
+	 */
+	public boolean subscribe(long id) throws RemoteException;
 	
 	
 	/**
@@ -32,15 +38,7 @@ public interface IRentingService extends Remote {
 	 * @throws RemoteException
 	 */
 	ICar[] getAllCars() throws RemoteException;
-		
-	/**
-	 * Returns 0 if the {@link ICar} corresponding to the model does not exist.
-	 * Otherwise returns the price.
-	 * @param model the model of the {@link ICar}
-	 * @return 0 if does not exist otherwise the price.
-	 * @throws RemoteException
-	 */
-	double getCarPrice(String model) throws RemoteException;
+	
 	
 	/**
 	 * Receives a renting request and notify's the server.
@@ -63,16 +61,18 @@ public interface IRentingService extends Remote {
 	 */
 	void receiveCarReturnRequest(IClient client, ICar car, IRating rating) throws RemoteException;
 	
-	/**
-	 * @param car 
-	 * @return Display's all of the {@link IRating}.
-	 * @throws RemoteException
-	 */
-	String displayRatings(ICar car) throws RemoteException;
 	
 	/**
-	 * @param model
-	 * @return
+	 * @param model of the {@link ICar}
+	 * @param id of the {@link ICar}
+	 * @return Display's all {@link IRating} of a {@link ICar}.
+	 * @throws RemoteException
+	 */
+	String displayRatings(String model, long id) throws RemoteException;
+	
+	/**
+	 * @param model of the {@link ICar}
+	 * @return Display's all the cars from a model.
 	 * @throws RemoteException
 	 */
 	String displayCarsFromModel(String model) throws RemoteException;
