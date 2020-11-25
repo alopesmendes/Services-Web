@@ -1,0 +1,42 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from BankServiceService WSDL service -->
+
+  <service name="BankService" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://bank.corp.uge.fr"/>
+      <parameter name="wsdlServiceElement" value="BankServiceService"/>
+      <parameter name="schemaQualified" value="http://bank.corp.uge.fr"/>
+      <parameter name="wsdlServicePort" value="BankService"/>
+      <parameter name="className" value="fr.uge.corp.bank.BankServiceSoapBindingImpl"/>
+      <parameter name="wsdlPortType" value="BankService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="transfer" qname="operNS:transfer" xmlns:operNS="http://bank.corp.uge.fr" soapAction="" >
+        <parameter qname="pns:fromAccount" xmlns:pns="http://bank.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:toAccount" xmlns:pns="http://bank.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:amount" xmlns:pns="http://bank.corp.uge.fr" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="deposit" qname="operNS:deposit" xmlns:operNS="http://bank.corp.uge.fr" returnQName="retNS:depositReturn" xmlns:retNS="http://bank.corp.uge.fr" returnType="rtns:long" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:account" xmlns:pns="http://bank.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:amount" xmlns:pns="http://bank.corp.uge.fr" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="withdraw" qname="operNS:withdraw" xmlns:operNS="http://bank.corp.uge.fr" returnQName="retNS:withdrawReturn" xmlns:retNS="http://bank.corp.uge.fr" returnType="rtns:long" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:account" xmlns:pns="http://bank.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:amount" xmlns:pns="http://bank.corp.uge.fr" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getBalance" qname="operNS:getBalance" xmlns:operNS="http://bank.corp.uge.fr" returnQName="retNS:getBalanceReturn" xmlns:retNS="http://bank.corp.uge.fr" returnType="rtns:long" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+        <parameter qname="pns:account" xmlns:pns="http://bank.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <parameter name="allowedMethods" value="transfer getBalance deposit withdraw"/>
+
+  </service>
+</deployment>
