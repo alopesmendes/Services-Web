@@ -4,9 +4,9 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import fr.uge.corp.ifscars.cars.ICar;
 
@@ -14,16 +14,11 @@ public class Client extends UnicastRemoteObject implements IClient {
 	
 	private final long id;
 	private static final Logger logger = Logger.getLogger(Client.class.getName()); 
-	private final Map<String, ICar> rentedCars;
+	private final Map<String, Map<Long, ICar>> rentedCars;
 	
 	public Client(long id) throws RemoteException {
 		this.id = id;
-		rentedCars = new HashMap<String, ICar>();
-	}
-	
-	@Override
-	public int hashCode() {
-		return Long.hashCode(id);
+		rentedCars = new HashMap<>();
 	}
 
 	@Override
@@ -33,30 +28,44 @@ public class Client extends UnicastRemoteObject implements IClient {
 
 	@Override
 	public void receiveCar(ICar car) throws RemoteException {
-		if (!rentedCars.containsKey(car.getModel())) {
-			rentedCars.put(car.getModel(), car);
+		if (!rentedCars.containsKey(car.getModel()) || !rentedCars.get(car.getModel()).containsKey(car.getId())) {
+			Map<Long, ICar> map = rentedCars.computeIfAbsent(car.getModel(), __ -> new HashMap<>());
+			map.put(car.getId(), car);
+			rentedCars.put(car.getModel(), map);
 			logger.log(Level.INFO, "you have rented ["+car.display()+"]");
 		}
 	}
 
 	@Override
 	public void returnCar(ICar car) throws RemoteException {
-		rentedCars.remove(car.getModel());
+		rentedCars.computeIfAbsent(car.getModel(), __ -> new HashMap<>()).remove(car.getId());
 		logger.log(Level.INFO, "you have return ["+car.display()+"]");
 	}
 
 	@Override
-	public ICar getCar(String model) throws RemoteException {
-		return rentedCars.get(model);
+	public ICar getCar(String model, long id) throws RemoteException {
+		if (!rentedCars.containsKey(model)) {
+			return null;
+		}
+		return rentedCars.get(model).get(id);
 	}
 
 	@Override
 	public String displayCurrentlyRentedCars() throws RemoteException {
-		StringJoiner sj = new StringJoiner("\n\t", "{\n", "\n}");
-		for (ICar car : rentedCars.values()) {
-			sj.add(car.display());
-		}
-		return sj.toString();
+		
+		return rentedCars.values().stream().flatMap(x -> x.values().stream()).
+				map(x -> {
+					try {
+						return x.display();
+					} catch (RemoteException e) {
+						throw new RuntimeException(e);
+					}
+				}).collect(Collectors.joining(", ", "<", ">"));
+	}
+
+	@Override
+	public long getId() throws RemoteException {
+		return id;
 	}
 
 }

@@ -18,29 +18,68 @@ import fr.uge.corp.rentingapp.client.IClient;
  */
 public interface IRentingService extends Remote {
 	
-	public static enum RentStatus {
-		None, Wait, Give
-	}
-	
-	ICar getCar(String model) throws RemoteException;
-	
-	ICar[] getAllCars() throws RemoteException;
-		
 	/**
-	 * Returns 0 if the {@link ICar} corresponding to the model does not exist.
-	 * Otherwise returns the price.
-	 * @param model the model of the {@link ICar}
-	 * @return 0 if does not exist otherwise the price.
+	 * Allows a client to subcribe to the renting service.
+	 * @param id of client
 	 * @throws RemoteException
 	 */
-	double getCarPrice(String model) throws RemoteException;
+	public boolean subscribe(long id) throws RemoteException;
 	
-	void receiveCarRentingRequest(IClient client, String model) throws RemoteException;
+	/**
+	 * @param model of the {@link ICar}
+	 * @return Gets a {@link ICar} of this model.
+	 * @throws RemoteException
+	 */
+	ICar getCar(String model) throws RemoteException;
 	
+	/**
+	 * @return An array of all cars available.
+	 * @throws RemoteException
+	 */
+	ICar[] getAllCars() throws RemoteException;
+	
+	
+	/**
+	 * Receives a renting request and notify's the server.
+	 * The server will give the client the car if it's available.
+	 * @param client that request the {@link ICar}.
+	 * @param model of the {@link ICar}.
+	 * @param id of the {@link ICar}.
+	 * @throws RemoteException
+	 */
+	void receiveCarRentingRequest(IClient client, String model, long id) throws RemoteException;
+	
+	/**
+	 * Receives a return request and notify's the server.
+	 * The server will take back the {@link ICar} with it's {@link IRating}.
+	 * And if there are {@link IClient} waiting for the {@link ICar} it will notify them.
+	 * @param client that return the {@link ICar}
+	 * @param car returned.
+	 * @param rating of the {@link ICar}
+	 * @throws RemoteException
+	 */
 	void receiveCarReturnRequest(IClient client, ICar car, IRating rating) throws RemoteException;
 	
-	String displayRatings(ICar car) throws RemoteException;
+	
+	/**
+	 * @param model of the {@link ICar}
+	 * @param id of the {@link ICar}
+	 * @return Display's all {@link IRating} of a {@link ICar}.
+	 * @throws RemoteException
+	 */
+	String displayRatings(String model, long id) throws RemoteException;
+	
+	/**
+	 * @param model of the {@link ICar}
+	 * @return Display's all the cars from a model.
+	 * @throws RemoteException
+	 */
+	String displayCarsFromModel(String model) throws RemoteException;
 		
+	/**
+	 * @return Display of the renting service.
+	 * @throws RemoteException
+	 */
 	String display() throws RemoteException;
 	
 	

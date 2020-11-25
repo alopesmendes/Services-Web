@@ -42,7 +42,7 @@ public class Car extends UnicastRemoteObject implements ICar {
 
 	@Override
 	public String display() throws RemoteException{
-		return model+":"+id;
+		return "id:"+id+" model:"+model+" price:"+price+"EUR";
 	}
 
 	@Override

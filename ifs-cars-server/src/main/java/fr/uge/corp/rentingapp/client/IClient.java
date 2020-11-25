@@ -15,6 +15,14 @@ import fr.uge.corp.ifscars.cars.ICar;
  *
  */
 public interface IClient extends Remote {
+	
+	
+	/**
+	 * @return Getter for id.
+	 * @throws RemoteException
+	 */
+	long getId() throws RemoteException;
+	
 	/**
 	 * Notification of refused request.
 	 * @param msg explaining why the request was refused. 
@@ -42,7 +50,7 @@ public interface IClient extends Remote {
 	 * @return a rented {@link ICar}
 	 * @throws RemoteException
 	 */
-	ICar getCar(String model) throws RemoteException;
+	ICar getCar(String model, long id) throws RemoteException;
 	
 	/**
 	 * @return Display's all currently rented cars.
