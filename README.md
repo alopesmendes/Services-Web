@@ -19,12 +19,12 @@ mvn package
 ```
 
 This commands builds the following packages:
-* `bank.jar` - an executable JAR found at `bank/target`
-* `ifscars-server.jar` - an executable JAR found at `ifscars-server/target`
+* `bank.war` - a webservice WAR file that is ready to be deployed on a Tomcat server, found at `bank/target`
+* `ifs-cars-server.jar` - an executable JAR found at `ifs-cars-server/target`
 * `renting-app.jar` - an executable JAR found at `renting-app/target`
-* `ifscars-web.war` - a webservice WAR file that is ready to be deployed on a Tomcat server
+* `ifs-cars-web.war` - a webservice WAR file that is ready to be deployed on a Tomcat server, found at `ifs-cars-web/target`
 
-### Deploy webservice to Tomcat
+### Deploy webservices to Tomcat
 
 Make sure your Tomcat installation has users configured for the manager. If not, edit the `conf/tomcat-users.xml` of your Tomcat installation and add the following:
 
@@ -63,7 +63,7 @@ Go back the the root directory of the project, and run the following (make sure 
 mvn tomcat7:deploy
 ```
 
-You can now access the webservice at http://localhost:8080/ifscars-web/services/Hello
+You can now access the ifs-cars webservice at http://localhost:8080/ifs-cars-web/services/Hello, and the bank webservice at http://localhost:8080/bank/services/BankService
 
 > **Note:** if you already deployed the webservice and want to update it, run `mvn tomcat7:redeploy` instead
 
@@ -74,7 +74,7 @@ In order to work on this project with Eclipse, follow these steps:
 1. Make sure the Maven integration for Eclipse is installed. Instruction for installation can be found here: https://download.eclipse.org/technology/m2e/releases/1.9/
 2. Once the plugin is installed and Eclipse is restarted, go to `File > Import...` and find `Import existing Maven project`
 3. Select the project root directory, make sure all modules are ticked, and finish the import
-4. Right click the `ifscars-web` project in the Package Explorer, select `Configure > Convert to Faceted Form...`, tick `Dynamic Web module` then `Apply and close`
+4. Right click the `ifs-cars-web` project in the Package Explorer, select `Configure > Convert to Faceted Form...`, tick `Dynamic Web module` then `Apply and close`
 5. Make sure all projects are using Java 1.8 as Compiler compliance level in `Project properties > Java Compiler`
 6. Feel free to configure a Tomcat server within Eclipse to run the webservice directly from the IDE
 
