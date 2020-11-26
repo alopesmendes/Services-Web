@@ -70,6 +70,17 @@ public interface IRentingService extends Remote {
 	 */
 	String displayRatings(String model, long id) throws RemoteException;
 	
+	
+	/**
+	 * @param model
+	 * @param id
+	 * @return
+	 * @throws RemoteException
+	 */
+	String displayAverageRating(String model, long id) throws RemoteException;
+	
+	boolean isAvailable(String model, long id) throws RemoteException;
+	
 	/**
 	 * @param model of the {@link ICar}
 	 * @return Display's all the cars from a model.

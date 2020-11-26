@@ -19,13 +19,13 @@ public interface IRating extends Remote {
 	 * @return Getter for rating
 	 * @throws RemoteException
 	 */
-	double getRating() throws RemoteException;
+	int getRating() throws RemoteException;
 	
 	/**
 	 * @return Getter for condition
 	 * @throws RemoteException
 	 */
-	double getCondition() throws RemoteException;
+	int getCondition() throws RemoteException;
 	
 	/**
 	 * @return String of rating.

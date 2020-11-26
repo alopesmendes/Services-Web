@@ -26,9 +26,9 @@ public class Command {
 			logger.log(Level.INFO, "You cannot return a car you don't have.");
 			return;
 		}
-		double r, c;
-		r = Double.parseDouble(subcommand[0]);
-		c = Double.parseDouble(subcommand[1]);
+		int r, c;
+		r = Integer.parseInt(subcommand[0]);
+		c = Integer.parseInt(subcommand[1]);
 		
 		service.receiveCarReturnRequest(client, car, new Rating(r, c));
 	}

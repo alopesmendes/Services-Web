@@ -21,7 +21,7 @@ public interface ICar extends Remote {
 	/**
 	 * @return Getter for price.
 	 */
-	double getPrice() throws RemoteException;
+	long getPrice() throws RemoteException;
 	
 	/**
 	 * @return Getter for id.
