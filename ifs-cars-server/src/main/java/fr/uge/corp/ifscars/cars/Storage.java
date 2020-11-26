@@ -169,6 +169,7 @@ public class Storage {
 		return storage.containsKey(car.getModel()) && storage.get(car.getModel()).containsKey(car.getId())
 				&& storage.get(car.getModel()).get(car.getId()).available;
 	}
+	
 
 	/**
 	 * @param car a {@link ICar}

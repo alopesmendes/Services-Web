@@ -25,6 +25,7 @@ public interface IRentingService extends Remote {
 	 */
 	public boolean subscribe(long id) throws RemoteException;
 	
+	
 	/**
 	 * @param model of the {@link ICar}
 	 * @return Gets a {@link ICar} of this model.
@@ -68,6 +69,27 @@ public interface IRentingService extends Remote {
 	 * @throws RemoteException
 	 */
 	String displayRatings(String model, long id) throws RemoteException;
+	
+	
+	/**
+	 * Returns -1 if rating empty otherwise the average.
+	 * @param model of {@link ICar}
+	 * @param id of {@link ICar}
+	 * @return the average rating.
+	 * @throws RemoteException
+	 */
+	double averageRating(String model, long id) throws RemoteException;
+	
+	/**
+	 * Returns -1 if condition empty otherwise the average.
+	 * @param model of {@link ICar}
+	 * @param id of {@link ICar}
+	 * @return the average condition.
+	 * @throws RemoteException
+	 */
+	double averageCondition(String model, long id) throws RemoteException;
+	
+	boolean isAvailable(String model, long id) throws RemoteException;
 	
 	/**
 	 * @param model of the {@link ICar}

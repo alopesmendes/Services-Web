@@ -16,7 +16,7 @@ public class Command {
 		String[] commands = line.split(" ", 3);
 		if (verifyCommand(commands.length == 3, "@add [id:long] [price:double] [model:String]")) {
 			long id =  Long.parseLong(commands[0]);
-			double price = Double.parseDouble(commands[1]);
+			long price = Long.parseLong(commands[1]);
 			String model = commands[2];
 			ICar car = new Car(model, id, price);
 			storage.add(car);

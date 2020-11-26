@@ -14,8 +14,8 @@ import fr.uge.corp.ifscars.cars.ICar;
  *
  */
 public class Rating extends UnicastRemoteObject implements IRating{
-	private final double rating;
-	private final double condition;
+	private final int rating;
+	private final int condition;
 	
 	/**
 	 * Constructs a Rating with rating and condition
@@ -23,7 +23,7 @@ public class Rating extends UnicastRemoteObject implements IRating{
 	 * @param condition of the car.
 	 * @throws RemoteException
 	 */
-	public Rating(double rating, double condition) throws RemoteException {
+	public Rating(int rating, int condition) throws RemoteException {
 		if (rating < 0 || rating > 5) {
 			throw new IllegalArgumentException("rating is < 0 or > 5");
 		}
@@ -35,14 +35,14 @@ public class Rating extends UnicastRemoteObject implements IRating{
 	}
 	
 	@Override
-	public double getRating() throws RemoteException {
+	public int getRating() throws RemoteException {
 		return rating;
 	}
 
 
 
 	@Override
-	public double getCondition() throws RemoteException {
+	public int getCondition() throws RemoteException {
 		return condition;
 	}
 	

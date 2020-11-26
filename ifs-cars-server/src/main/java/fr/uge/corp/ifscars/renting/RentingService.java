@@ -161,4 +161,39 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 		
 	}
 
+	@Override
+	public double averageRating(String model, long id) throws RemoteException {
+		Objects.requireNonNull(model);
+		ICar car = storage.getCar(model, id);
+		int r = 0;
+		List<IRating> list = ratings.getOrDefault(car, new ArrayList<>());
+		if (list.size() == 0) {
+			return -1;
+		}
+		for (IRating rating : list) {
+			r += rating.getRating();
+		}
+		return r / list.size();
+	}
+
+	@Override
+	public boolean isAvailable(String model, long id) throws RemoteException {
+		return storage.availableCar(storage.getCar(model, id));
+	}
+
+	@Override
+	public double averageCondition(String model, long id) throws RemoteException {
+		Objects.requireNonNull(model);
+		ICar car = storage.getCar(model, id);
+		int c = 0;
+		List<IRating> list = ratings.getOrDefault(car, new ArrayList<>());
+		if (list.size() == 0) {
+			return -1;
+		}
+		for (IRating rating : list) {
+			c += rating.getCondition();
+		}
+		return c / list.size();
+	}
+
 }

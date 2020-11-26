@@ -14,10 +14,10 @@ import java.util.Objects;
  */
 public class Car extends UnicastRemoteObject implements ICar {
 	private final String model;
-	private final double price;
+	private final long price;
 	private final long id;
 	
-	public Car(String model, long id, double price) throws RemoteException{
+	public Car(String model, long id, long price) throws RemoteException{
 		Objects.requireNonNull(model);
 		if (price <= 0) {
 			throw new IllegalArgumentException("price <= 0");
@@ -36,7 +36,7 @@ public class Car extends UnicastRemoteObject implements ICar {
 	}
 
 	@Override
-	public double getPrice() throws RemoteException{
+	public long getPrice() throws RemoteException{
 		return price;
 	}
 
