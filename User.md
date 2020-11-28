@@ -22,7 +22,7 @@ Rest/renting-app$ java -jar target/renting-app.jar [id:long]
 ##### <center>*Server Commands*</center>
 |Commands|Descripton|Arguments|Example|
 |:------:|:--------:|:-------:|:-----:|
-|@add|the command that will add a car to the storage|[id:long], [price:long], [model:String]|@add 1 10000 renault|
+|@add|the command that will add a car to the storage.<br>For the price 600 equals to 6,00€|[id:long], [price:long], [model:String]|@add 1 10000 renault|
 |@remove|the command will remove a car from the storage|[id:long]|@remove 5|
 |@all|the command will display all employee currently rented cars||@all|
 |@help|the command will display the user manual of other commands||@help|
