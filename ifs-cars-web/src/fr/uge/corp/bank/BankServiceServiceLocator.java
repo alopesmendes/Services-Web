@@ -1,65 +1,60 @@
 /**
- * CurrencyServerLocator.java
+ * BankServiceServiceLocator.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package com.currencysystem.webservices.currencyserver;
+package fr.uge.corp.bank;
 
 @SuppressWarnings("all")
-public class CurrencyServerLocator extends org.apache.axis.client.Service implements com.currencysystem.webservices.currencyserver.CurrencyServer {
+public class BankServiceServiceLocator extends org.apache.axis.client.Service implements fr.uge.corp.bank.BankServiceService {
 
-/**
- * Currency Server - An exchange rate information and currency conversion
- * Web service.
- */
-
-    public CurrencyServerLocator() {
+    public BankServiceServiceLocator() {
     }
 
 
-    public CurrencyServerLocator(org.apache.axis.EngineConfiguration config) {
+    public BankServiceServiceLocator(org.apache.axis.EngineConfiguration config) {
         super(config);
     }
 
-    public CurrencyServerLocator(java.lang.String wsdlLoc, javax.xml.namespace.QName sName) throws javax.xml.rpc.ServiceException {
+    public BankServiceServiceLocator(java.lang.String wsdlLoc, javax.xml.namespace.QName sName) throws javax.xml.rpc.ServiceException {
         super(wsdlLoc, sName);
     }
 
-    // Use to get a proxy class for CurrencyServerSoap
-    private java.lang.String CurrencyServerSoap_address = "http://fx.currencysystem.com/webservices/CurrencyServer5.asmx";
+    // Use to get a proxy class for BankService
+    private java.lang.String BankService_address = "http://localhost:8080/bank/services/BankService";
 
-    public java.lang.String getCurrencyServerSoapAddress() {
-        return CurrencyServerSoap_address;
+    public java.lang.String getBankServiceAddress() {
+        return BankService_address;
     }
 
     // The WSDD service name defaults to the port name.
-    private java.lang.String CurrencyServerSoapWSDDServiceName = "CurrencyServerSoap";
+    private java.lang.String BankServiceWSDDServiceName = "BankService";
 
-    public java.lang.String getCurrencyServerSoapWSDDServiceName() {
-        return CurrencyServerSoapWSDDServiceName;
+    public java.lang.String getBankServiceWSDDServiceName() {
+        return BankServiceWSDDServiceName;
     }
 
-    public void setCurrencyServerSoapWSDDServiceName(java.lang.String name) {
-        CurrencyServerSoapWSDDServiceName = name;
+    public void setBankServiceWSDDServiceName(java.lang.String name) {
+        BankServiceWSDDServiceName = name;
     }
 
-    public com.currencysystem.webservices.currencyserver.CurrencyServerSoap getCurrencyServerSoap() throws javax.xml.rpc.ServiceException {
+    public fr.uge.corp.bank.BankService getBankService() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
-            endpoint = new java.net.URL(CurrencyServerSoap_address);
+            endpoint = new java.net.URL(BankService_address);
         }
         catch (java.net.MalformedURLException e) {
             throw new javax.xml.rpc.ServiceException(e);
         }
-        return getCurrencyServerSoap(endpoint);
+        return getBankService(endpoint);
     }
 
-    public com.currencysystem.webservices.currencyserver.CurrencyServerSoap getCurrencyServerSoap(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+    public fr.uge.corp.bank.BankService getBankService(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
         try {
-            com.currencysystem.webservices.currencyserver.CurrencyServerSoapStub _stub = new com.currencysystem.webservices.currencyserver.CurrencyServerSoapStub(portAddress, this);
-            _stub.setPortName(getCurrencyServerSoapWSDDServiceName());
+            fr.uge.corp.bank.BankServiceSoapBindingStub _stub = new fr.uge.corp.bank.BankServiceSoapBindingStub(portAddress, this);
+            _stub.setPortName(getBankServiceWSDDServiceName());
             return _stub;
         }
         catch (org.apache.axis.AxisFault e) {
@@ -67,8 +62,8 @@ public class CurrencyServerLocator extends org.apache.axis.client.Service implem
         }
     }
 
-    public void setCurrencyServerSoapEndpointAddress(java.lang.String address) {
-        CurrencyServerSoap_address = address;
+    public void setBankServiceEndpointAddress(java.lang.String address) {
+        BankService_address = address;
     }
 
     /**
@@ -78,9 +73,9 @@ public class CurrencyServerLocator extends org.apache.axis.client.Service implem
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
-            if (com.currencysystem.webservices.currencyserver.CurrencyServerSoap.class.isAssignableFrom(serviceEndpointInterface)) {
-                com.currencysystem.webservices.currencyserver.CurrencyServerSoapStub _stub = new com.currencysystem.webservices.currencyserver.CurrencyServerSoapStub(new java.net.URL(CurrencyServerSoap_address), this);
-                _stub.setPortName(getCurrencyServerSoapWSDDServiceName());
+            if (fr.uge.corp.bank.BankService.class.isAssignableFrom(serviceEndpointInterface)) {
+                fr.uge.corp.bank.BankServiceSoapBindingStub _stub = new fr.uge.corp.bank.BankServiceSoapBindingStub(new java.net.URL(BankService_address), this);
+                _stub.setPortName(getBankServiceWSDDServiceName());
                 return _stub;
             }
         }
@@ -100,8 +95,8 @@ public class CurrencyServerLocator extends org.apache.axis.client.Service implem
             return getPort(serviceEndpointInterface);
         }
         java.lang.String inputPortName = portName.getLocalPart();
-        if ("CurrencyServerSoap".equals(inputPortName)) {
-            return getCurrencyServerSoap();
+        if ("BankService".equals(inputPortName)) {
+            return getBankService();
         }
         else  {
             java.rmi.Remote _stub = getPort(serviceEndpointInterface);
@@ -111,7 +106,7 @@ public class CurrencyServerLocator extends org.apache.axis.client.Service implem
     }
 
     public javax.xml.namespace.QName getServiceName() {
-        return new javax.xml.namespace.QName("http://webservices.currencysystem.com/currencyserver/", "CurrencyServer");
+        return new javax.xml.namespace.QName("http://bank.corp.uge.fr", "BankServiceService");
     }
 
     private java.util.HashSet ports = null;
@@ -119,7 +114,7 @@ public class CurrencyServerLocator extends org.apache.axis.client.Service implem
     public java.util.Iterator getPorts() {
         if (ports == null) {
             ports = new java.util.HashSet();
-            ports.add(new javax.xml.namespace.QName("http://webservices.currencysystem.com/currencyserver/", "CurrencyServerSoap"));
+            ports.add(new javax.xml.namespace.QName("http://bank.corp.uge.fr", "BankService"));
         }
         return ports.iterator();
     }
@@ -129,8 +124,8 @@ public class CurrencyServerLocator extends org.apache.axis.client.Service implem
     */
     public void setEndpointAddress(java.lang.String portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
         
-if ("CurrencyServerSoap".equals(portName)) {
-            setCurrencyServerSoapEndpointAddress(address);
+if ("BankService".equals(portName)) {
+            setBankServiceEndpointAddress(address);
         }
         else 
 { // Unknown Port Name

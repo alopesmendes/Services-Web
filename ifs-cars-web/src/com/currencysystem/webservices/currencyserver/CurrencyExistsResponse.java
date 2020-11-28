@@ -7,6 +7,7 @@
 
 package com.currencysystem.webservices.currencyserver;
 
+@SuppressWarnings("all")
 public class CurrencyExistsResponse  implements java.io.Serializable {
     private boolean currencyExistsResult;
 

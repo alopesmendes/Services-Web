@@ -7,6 +7,7 @@
 
 package com.currencysystem.webservices.currencyserver;
 
+@SuppressWarnings("all")
 public class CurrencyServerSoapStub extends org.apache.axis.client.Stub implements com.currencysystem.webservices.currencyserver.CurrencyServerSoap {
     private java.util.Vector cachedSerClasses = new java.util.Vector();
     private java.util.Vector cachedSerQNames = new java.util.Vector();

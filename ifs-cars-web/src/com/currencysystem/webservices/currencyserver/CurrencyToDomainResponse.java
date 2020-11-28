@@ -7,6 +7,7 @@
 
 package com.currencysystem.webservices.currencyserver;
 
+@SuppressWarnings("all")
 public class CurrencyToDomainResponse  implements java.io.Serializable {
     private java.lang.String currencyToDomainResult;
 

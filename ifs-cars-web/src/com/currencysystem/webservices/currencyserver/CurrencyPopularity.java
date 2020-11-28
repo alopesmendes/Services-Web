@@ -7,6 +7,7 @@
 
 package com.currencysystem.webservices.currencyserver;
 
+@SuppressWarnings("all")
 public class CurrencyPopularity  implements java.io.Serializable {
     private java.lang.String licenseKey;
 

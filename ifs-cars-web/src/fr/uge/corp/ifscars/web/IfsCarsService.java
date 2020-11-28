@@ -18,15 +18,15 @@ public class IfsCarsService {
 		return ifsCars.getAvailableCars(currency);
 	}
 	
-	public void addCarToCart(String model, long id) {
-		ifsCars.addCarToCart(model, id);
+	public void addCarToCart(String cartName, long id) {
+		ifsCars.addCarToCart(cartName, id);
 	}
 	
-	public AvailableCar[] getCarsInCart(String currency) {
-		return ifsCars.getCarsInCart(currency);
+	public AvailableCar[] getCarsInCart(String cartName, String currency) throws RemoteException {
+		return ifsCars.getCarsInCart(cartName, currency);
 	}
 	
-	public void confirmPurchase(String bankAccountName) {
-		ifsCars.confirmPurchase(bankAccountName);
+	public void confirmPurchase(String cartName, String bankAccountName) throws RemoteException {
+		ifsCars.confirmPurchase(cartName, bankAccountName);
 	}
 }

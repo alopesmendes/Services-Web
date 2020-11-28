@@ -24,13 +24,15 @@
         <parameter qname="pns:currency" xmlns:pns="http://web.ifscars.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
       </operation>
       <operation name="addCarToCart" qname="operNS:addCarToCart" xmlns:operNS="http://web.ifscars.corp.uge.fr" soapAction="" >
-        <parameter qname="pns:model" xmlns:pns="http://web.ifscars.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:cartName" xmlns:pns="http://web.ifscars.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
         <parameter qname="pns:id" xmlns:pns="http://web.ifscars.corp.uge.fr" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
       </operation>
       <operation name="getCarsInCart" qname="operNS:getCarsInCart" xmlns:operNS="http://web.ifscars.corp.uge.fr" returnQName="retNS:getCarsInCartReturn" xmlns:retNS="http://web.ifscars.corp.uge.fr" returnType="rtns:AvailableCar" xmlns:rtns="http://web.ifscars.corp.uge.fr" soapAction="" >
+        <parameter qname="pns:cartName" xmlns:pns="http://web.ifscars.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
         <parameter qname="pns:currency" xmlns:pns="http://web.ifscars.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
       </operation>
       <operation name="confirmPurchase" qname="operNS:confirmPurchase" xmlns:operNS="http://web.ifscars.corp.uge.fr" soapAction="" >
+        <parameter qname="pns:cartName" xmlns:pns="http://web.ifscars.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
         <parameter qname="pns:bankAccountName" xmlns:pns="http://web.ifscars.corp.uge.fr" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
       </operation>
       <parameter name="allowedMethods" value="confirmPurchase addCarToCart getCarsInCart getAvailableCars"/>

@@ -30,7 +30,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="addCarToCart">
     <complexType>
      <sequence>
-      <element name="model" type="xsd:string"/>
+      <element name="cartName" type="xsd:string"/>
       <element name="id" type="xsd:long"/>
      </sequence>
     </complexType>
@@ -41,6 +41,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="getCarsInCart">
     <complexType>
      <sequence>
+      <element name="cartName" type="xsd:string"/>
       <element name="currency" type="xsd:string"/>
      </sequence>
     </complexType>
@@ -55,6 +56,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="confirmPurchase">
     <complexType>
      <sequence>
+      <element name="cartName" type="xsd:string"/>
       <element name="bankAccountName" type="xsd:string"/>
      </sequence>
     </complexType>

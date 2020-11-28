@@ -7,6 +7,7 @@
 
 package com.currencysystem.webservices.currencyserver;
 
+@SuppressWarnings("all")
 public class CurrencyPhysicalResponse  implements java.io.Serializable {
     private boolean currencyPhysicalResult;
 

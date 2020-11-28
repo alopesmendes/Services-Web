@@ -7,6 +7,7 @@
 
 package com.currencysystem.webservices.currencyserver;
 
+@SuppressWarnings("all")
 public class CurrencyPopularityResponse  implements java.io.Serializable {
     private long currencyPopularityResult;
 

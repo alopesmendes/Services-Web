@@ -7,6 +7,7 @@
 
 package com.currencysystem.webservices.currencyserver;
 
+@SuppressWarnings("all")
 public class CurrencyLegalTenderResponse  implements java.io.Serializable {
     private boolean currencyLegalTenderResult;
 
