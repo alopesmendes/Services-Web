@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Use this file to deploy some handlers/chains and services      --><!-- Two ways to do this:                                           --><!--   java org.apache.axis.client.AdminClient deploy.wsdd          --><!--      after the axis server is running                          --><!-- or                                                             --><!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   --><!--      from the same directory that the Axis engine runs         --><deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from IfsCarsServiceService WSDL service -->
+
+  <service name="IfsCarsService" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://web.ifscars.corp.uge.fr"/>
+      <parameter name="wsdlServiceElement" value="IfsCarsServiceService"/>
+      <parameter name="schemaQualified" value="http://web.ifscars.corp.uge.fr"/>
+      <parameter name="wsdlServicePort" value="IfsCarsService"/>
+      <parameter name="className" value="fr.uge.corp.ifscars.web.IfsCarsService"/>
+      <parameter name="wsdlPortType" value="IfsCarsService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation xmlns:operNS="http://web.ifscars.corp.uge.fr" xmlns:retNS="http://web.ifscars.corp.uge.fr" xmlns:rtns="http://web.ifscars.corp.uge.fr" name="getAvailableCars" qname="operNS:getAvailableCars" returnQName="retNS:getAvailableCarsReturn" returnType="rtns:AvailableCar" soapAction="">
+        <parameter xmlns:pns="http://web.ifscars.corp.uge.fr" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:currency" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://web.ifscars.corp.uge.fr" name="addCarToCart" qname="operNS:addCarToCart" soapAction="">
+        <parameter xmlns:pns="http://web.ifscars.corp.uge.fr" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:model" type="tns:string"/>
+        <parameter xmlns:pns="http://web.ifscars.corp.uge.fr" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:id" type="tns:long"/>
+      </operation>
+      <operation xmlns:operNS="http://web.ifscars.corp.uge.fr" xmlns:retNS="http://web.ifscars.corp.uge.fr" xmlns:rtns="http://web.ifscars.corp.uge.fr" name="getCarsInCart" qname="operNS:getCarsInCart" returnQName="retNS:getCarsInCartReturn" returnType="rtns:AvailableCar" soapAction="">
+        <parameter xmlns:pns="http://web.ifscars.corp.uge.fr" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:currency" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://web.ifscars.corp.uge.fr" name="confirmPurchase" qname="operNS:confirmPurchase" soapAction="">
+        <parameter xmlns:pns="http://web.ifscars.corp.uge.fr" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:bankAccountName" type="tns:string"/>
+      </operation>
+      <parameter name="allowedMethods" value="confirmPurchase addCarToCart getCarsInCart getAvailableCars"/>
+
+      <typeMapping xmlns:ns="http://web.ifscars.corp.uge.fr" qname="ns:AvailableCar" type="java:fr.uge.corp.ifscars.web.AvailableCar" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+  </service>
+</deployment>
