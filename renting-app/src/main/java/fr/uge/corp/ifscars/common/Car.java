@@ -45,7 +45,7 @@ public class Car implements Serializable {
 
 	@Override
 	public String toString() {
-		return "id:" + id + " model:" + model + " price:" + price + "EUR";
+		return "Car{id=" + id + ", model=" + model + ", price=" + String.format("%.2fEUR", price / 100.0f) + "}";
 	}
 
 	@Override

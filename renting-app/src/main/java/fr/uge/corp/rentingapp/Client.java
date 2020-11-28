@@ -24,13 +24,8 @@ public class Client extends UnicastRemoteObject implements IClient {
 	}
 
 	@Override
-	public void receiveCar(Car car) throws RemoteException {
+	public void onCarReceived(Car car) throws RemoteException {
 		LOGGER.log(Level.INFO, "you have received " + car);
-	}
-
-	@Override
-	public void returnCar(Car car) throws RemoteException {
-		LOGGER.log(Level.INFO, "you have returned " + car);
 	}
 
 }

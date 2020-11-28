@@ -21,16 +21,11 @@ public interface IClient extends Remote {
 	long getId() throws RemoteException;
 	
 	/**
-	 * Will receive a {@link Car} from the server.
-	 * @param car received from server
+	 * Callback invoked remotely by the server when a car renting request is
+	 * fulfilled.
+	 * 
+	 * @param car the car received from server
 	 * @throws RemoteException
 	 */
-	void receiveCar(Car car) throws RemoteException;
-	
-	/**
-	 * Will return a {@link Car} to the server.
-	 * @param car returned to server.
-	 * @throws RemoteException
-	 */
-	void returnCar(Car car) throws RemoteException;
+	void onCarReceived(Car car) throws RemoteException;
 }

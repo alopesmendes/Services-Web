@@ -47,7 +47,7 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 	}
 
 	@Override
-	public void receiveCarRentingRequest(IClient client, long carId) throws RemoteException {
+	public void requestCarRenting(IClient client, long carId) throws RemoteException {
 		Objects.requireNonNull(client);
 		if (carsForClient(client.getId()).contains(carId)) {
 			throw new IllegalStateException("client is already renting this car");
@@ -58,7 +58,7 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 	}
 
 	@Override
-	public void receiveCarReturnRequest(IClient client, long carId, Rating rating) throws RemoteException {
+	public Car returnCar(IClient client, long carId, Rating rating) throws RemoteException {
 		Objects.requireNonNull(client);
 		Objects.requireNonNull(rating);
 		if (!carsForClient(client.getId()).remove(carId)) {
@@ -67,8 +67,8 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 		LOGGER.log(Level.INFO, "Client " + client.getId() + " returned car id " + carId + " with rating " + rating);
 		ratings.computeIfAbsent(carId, k -> Collections.synchronizedList(new ArrayList<>())).add(rating);
 		storage.release(carId);
-		client.returnCar(storage.get(carId));
 		processQueue(carId);
+		return storage.get(carId);
 	}
 
 	@Override
@@ -91,8 +91,8 @@ public class RentingService extends UnicastRemoteObject implements IRentingServi
 		Car car;
 		if ((car = storage.acquire(carId)) != null) {
 			IClient client = queue.remove();
+			client.onCarReceived(car);
 			carsForClient(client.getId()).add(car.getId());
-			client.receiveCar(car);
 		}
 	}
 

@@ -47,14 +47,14 @@ public interface IRentingService extends Remote {
 
 	/**
 	 * Invoked remotely by the client to request the renting of a car. The server
-	 * will later invoke {@link IClient#receiveCar(Car)} on the given client when
+	 * will later invoke {@link IClient#onCarReceived(Car)} on the given client when
 	 * the car is available.
 	 * 
 	 * @param client client that requests the car
 	 * @param carId  id of the car.
 	 * @throws RemoteException
 	 */
-	void receiveCarRentingRequest(IClient client, long carId) throws RemoteException;
+	void requestCarRenting(IClient client, long carId) throws RemoteException;
 
 	/**
 	 * Invoked remotely by the client to return a car that was previously rent. The
@@ -63,10 +63,11 @@ public interface IRentingService extends Remote {
 	 * 
 	 * @param client client that returns the car
 	 * @param carId  the id of the car returned.
-	 * @param rating of the car
+	 * @param rating the rating of the car
+	 * @return the car
 	 * @throws RemoteException
 	 */
-	void receiveCarReturnRequest(IClient client, long carId, Rating rating) throws RemoteException;
+	Car returnCar(IClient client, long carId, Rating rating) throws RemoteException;
 
 	/**
 	 * Gets the ratings for the given car id.

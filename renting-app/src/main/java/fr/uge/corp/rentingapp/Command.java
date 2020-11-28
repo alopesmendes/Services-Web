@@ -5,12 +5,13 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.uge.corp.ifscars.common.Car;
 import fr.uge.corp.ifscars.common.IClient;
 import fr.uge.corp.ifscars.common.IRentingService;
 import fr.uge.corp.ifscars.common.Rating;
 
 public class Command {
-	private static final Logger logger = Logger.getLogger(Command.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Command.class.getName());
 	
 	private static void commandReturn(String command, IRentingService service, IClient client) throws RemoteException {
 		Objects.requireNonNull(command);
@@ -24,7 +25,8 @@ public class Command {
 		long carId = Long.parseLong(subcommand[0]);
 		r = Integer.parseInt(subcommand[1]);
 		c = Integer.parseInt(subcommand[2]);
-		service.receiveCarReturnRequest(client, carId, new Rating(r, c));
+		Car car = service.returnCar(client, carId, new Rating(r, c));
+		LOGGER.log(Level.INFO, "you have returned " + car);
 	}
 	
 	private static void commandRequest(String command, IRentingService service, IClient client) throws RemoteException {
@@ -35,13 +37,15 @@ public class Command {
 		if (!verifyCommand(subcommand.length == 1, "@request [carId:long]")) {
 			return;
 		}
-		service.receiveCarRentingRequest(client, Long.parseLong(subcommand[0]));
+		long carId = Long.parseLong(subcommand[0]);
+		LOGGER.info("Requesting to rent car with id " + carId + ", you will receive it as soon as available");
+		service.requestCarRenting(client, carId);
 	}
 	
 	private static void commandShowCarsFromModel(String command, IRentingService service) throws RemoteException {
 		Objects.requireNonNull(command);
 		Objects.requireNonNull(service);
-		logger.log(Level.INFO, service.list(command, true, false).toString());
+		LOGGER.log(Level.INFO, service.list(command, true, false).toString());
 	}
 	
 	private static void commandHelp() {
@@ -51,7 +55,7 @@ public class Command {
 				+ "Name : @show, Description : shows all cars of same model, Arguments : [model:String]\n\r"
 				+ "Name : @all, Description : shows all currently rented cars\n\r"
 				+ "Name : @quit, Description : closes client\n\r";
-		logger.log(Level.INFO, msg);
+		LOGGER.log(Level.INFO, msg);
 				
 	}
 	
@@ -65,16 +69,16 @@ public class Command {
 			return;
 		}
 		long carId = Long.parseLong(subcommand[0]);
-		logger.log(Level.INFO, service.getRatingsForCar(carId).toString());
+		LOGGER.log(Level.INFO, service.getRatingsForCar(carId).toString());
 	}
 	
 	private static void commandAll(IRentingService service, IClient client) throws RemoteException {
-		logger.log(Level.INFO, service.listCarsRentByClient(client).toString());
+		LOGGER.log(Level.INFO, service.listCarsRentByClient(client).toString());
 	}
 	
 	private static boolean verifyCommand(boolean verifyFormat, String format) {
 		if (!verifyFormat) {
-			logger.log(Level.WARNING, "Bad Format : "+format);
+			LOGGER.log(Level.WARNING, "Bad Format : "+format);
 		}
 		return verifyFormat;
 	}
