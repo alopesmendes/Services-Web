@@ -6,6 +6,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Bank {
 	
 	private final ConcurrentHashMap<String, Long> balanceByAccount = new ConcurrentHashMap<>();
+	
+	public Bank() {
+		balanceByAccount.put("EiffelCorp", 1_000_000L);
+		balanceByAccount.put("Admin", 10_000_000L);
+	}
 
 	public long getBalance(String account) {
 		Objects.requireNonNull(account);

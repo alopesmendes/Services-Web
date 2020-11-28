@@ -63,9 +63,11 @@ Go back the the root directory of the project, and run the following (make sure 
 mvn tomcat7:deploy
 ```
 
-You can now access the ifs-cars webservice at http://localhost:8080/ifs-cars-web/services/Hello, and the bank webservice at http://localhost:8080/bank/services/BankService
+You can now access the ifs-cars webservice at http://localhost:8080/ifs-cars-web/services/IfsCarsService?wsdl and the bank webservice at http://localhost:8080/bank/services/BankService?wsdl
 
 > **Note:** if you already deployed the webservice and want to update it, run `mvn tomcat7:redeploy` instead
+
+> **Another note:** the ifs-cars webservice requires the ifs-cars-server to be running
 
 ## Development with Eclipse
 

@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://web.ifscars.corp.uge.fr" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://web.ifscars.corp.uge.fr" xmlns:intf="http://web.ifscars.corp.uge.fr" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://web.ifscars.corp.uge.fr" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="getAvailableCars">
+    <complexType>
+     <sequence>
+      <element name="currency" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAvailableCarsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getAvailableCarsReturn" type="impl:AvailableCar"/>
+     </sequence>
+    </complexType>
+   </element>
+   <complexType name="AvailableCar">
+    <sequence>
+     <element name="condition" type="xsd:double"/>
+     <element name="id" type="xsd:long"/>
+     <element name="model" nillable="true" type="xsd:string"/>
+     <element name="price" type="xsd:long"/>
+     <element name="score" type="xsd:double"/>
+    </sequence>
+   </complexType>
+   <element name="addCarToCart">
+    <complexType>
+     <sequence>
+      <element name="cartName" type="xsd:string"/>
+      <element name="id" type="xsd:long"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addCarToCartResponse">
+    <complexType/>
+   </element>
+   <element name="getCarsInCart">
+    <complexType>
+     <sequence>
+      <element name="cartName" type="xsd:string"/>
+      <element name="currency" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getCarsInCartResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getCarsInCartReturn" type="impl:AvailableCar"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="confirmPurchase">
+    <complexType>
+     <sequence>
+      <element name="cartName" type="xsd:string"/>
+      <element name="bankAccountName" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="confirmPurchaseResponse">
+    <complexType/>
+   </element>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getAvailableCarsResponse">
+
+      <wsdl:part element="impl:getAvailableCarsResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="confirmPurchaseResponse">
+
+      <wsdl:part element="impl:confirmPurchaseResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCarsInCartResponse">
+
+      <wsdl:part element="impl:getCarsInCartResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addCarToCartResponse">
+
+      <wsdl:part element="impl:addCarToCartResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCarsInCartRequest">
+
+      <wsdl:part element="impl:getCarsInCart" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAvailableCarsRequest">
+
+      <wsdl:part element="impl:getAvailableCars" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="confirmPurchaseRequest">
+
+      <wsdl:part element="impl:confirmPurchase" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="addCarToCartRequest">
+
+      <wsdl:part element="impl:addCarToCart" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="IfsCarsService">
+
+      <wsdl:operation name="getAvailableCars">
+
+         <wsdl:input message="impl:getAvailableCarsRequest" name="getAvailableCarsRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getAvailableCarsResponse" name="getAvailableCarsResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addCarToCart">
+
+         <wsdl:input message="impl:addCarToCartRequest" name="addCarToCartRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:addCarToCartResponse" name="addCarToCartResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getCarsInCart">
+
+         <wsdl:input message="impl:getCarsInCartRequest" name="getCarsInCartRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getCarsInCartResponse" name="getCarsInCartResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="confirmPurchase">
+
+         <wsdl:input message="impl:confirmPurchaseRequest" name="confirmPurchaseRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:confirmPurchaseResponse" name="confirmPurchaseResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="IfsCarsServiceSoapBinding" type="impl:IfsCarsService">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getAvailableCars">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAvailableCarsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAvailableCarsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addCarToCart">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addCarToCartRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addCarToCartResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getCarsInCart">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getCarsInCartRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getCarsInCartResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="confirmPurchase">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="confirmPurchaseRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="confirmPurchaseResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="IfsCarsServiceService">
+
+      <wsdl:port binding="impl:IfsCarsServiceSoapBinding" name="IfsCarsService">
+
+         <wsdlsoap:address location="http://localhost:8080/ifs-cars-web/services/IfsCarsService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
