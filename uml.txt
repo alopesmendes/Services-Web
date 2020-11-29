@@ -1,119 +1,119 @@
+
 @startuml
 
-package RmiAndWebServiceIfCars {
-    package cars {
-    
-        interface ICar {
-            +Rating[] ratings()
-            
-            +Rating generalRating()
-            
-            +String model()
-            
-            +double price(String fromCurrency)
-            
-            +int quantity()
-            
-            +{static} ICar create(...)
-        }
-        
-        class Storage {
-            +ICar[] cars()
-            +ICar get(int index)
-        }
-        
-        Storage -down-> ICar
+package fr.uge.corp.ifcars.common {
+    interface IClient<? extends Remote> {
+        +long getid()
+        +void onCarReceived(Car car)
     }
     
-    package locateRMI {
-        enum CarCondition {
-            Good, 
-            Repair, 
-            Destroy
-        }
-        
-        enum Score {
-            Excellent, 
-            Good, 
-            Adequate, 
-            Bad, 
-            Terrible
-        }
-        
-        note top of Rating : mutiple rating to come
-        class Rating {
-            String comment()
-            Score rating()
-            CarCondition condition()
-            
-            +{static} Rating RATING_DEFAULT;
-            
-        }
-        
-        class LocateService {
-            +LocateService(Storage storage)
-            
-            +Map<String, Map<Long, Int>> getAllCarsFromModel(String model)
-            ==
-            
-            +double getCarPrice(String model)
-            +Optional<ICar> getCar(String model, Predicate<Double> pr)
-            
-        }
-        
-        CarCondition -up-> Rating
-        Score -right--> Rating
-        Rating -right--> ICar
+    class Rating {
+        +int getScore()
+        +int getCondition()
     }
     
-    package webservice {
-        class Trade {
-            +boolean canBuy(String model, String fromCurrency, double amount)
-            +ICar sell(String model, String fromCurrency, double amount)
-        }
+    class Car{
+        +long getId()
+        +String getModel()
+        +long getPrice()
     }
+    
+    interface IRentingService<? extends Remote> {
+        +Car getCar(long carId)
+        +List<Car> list(String modelFilter, boolean showAvailableOnly, boolean showRatedOnly)
+        +void requestCarRenting(IClient client, long carId)
+        +Car returnCar(IClient client, long carId, Rating rating)
+        +List<Rating> getRatingsForCar(long carId)
+        +List<Car> listCarsRentByClient(IClient client)
+    }
+    
+    Car .down.> IClient
+    Car .left.> IRentingService
 }
 
-package WebServiceBank {
-    class Account {
-        +boolean deposit(double amount)
-        
-        +double withdrawn(double amount)
-        
-        +String fromCurrency()
-        
-        +boolean setFromCurrency(String fromCurrency)
+package fr.uge.corp.rentingapp {
+    class Commands {
+        +{static}void command(String line, IRentingService service, IClient client)
+        +{static}boolean quit(String line)
     }
-    
+        
+    class Client {}
+        
+    class Main {}
+        
+    Client .up...|> IClient
+    Commands --> Main
+}
+
+package fr.uge.corp.bank {
     class Bank {
-        +void register(...)
-        
-        +Account[] accounts()
-        
-        +Account getAccount(long id)
-        
-        +{static} double exchange(String fromCurrency, String toCurrency, double amount) 
+        +long getBalance(String account)
+        +long deposit(String account, long amount)
+        +long withdraw(String account, long amount)
+        +void transfer(String fromAccount, String toAccount, long amount)
+    }
+    class BankService {}
+    
+    Bank --> BankService
+}
 
+package fr.uge.corp.ifcars.server {
+    
+    class Command {
+        +{static}void command(String line, Storage storage)
+    }
+    class Main {}
+    class Storage {
+        +void add(Car car)
+        +Car remove(long id)
+        +Car acquire(long id)
+        +void release(long id)
+        +Car get(long id)
+        +Stream<Car> search(String modelFilter, boolean showAvailableOnly)
+    }
+    class RentingService {}
+    
+    RentingService .down...|> IRentingService
+    Storage .down..> Car
+}
+
+package fr.uge.corp.ifscars.web {
+    class AvailableCar {
+        +long getId()
+        +void setId(long id)
+	    +String getModel() 
+	    +void setModel(String model)
+	    +long getPrice()
+	    +void setPrice(long price)
+	    +double getScore()
+	    +void setScore(double score)
+	    +double getCondition()
+	    +void setCondition(double condition)
     }
     
-    Account --> Bank
-}
-
-package RmiEiffelCorp {
-    package employee {
-        interface IEmployee {
-            +Optional<ICar> request(ICar car)
-            
-            +List<ICar> cars()
-            
-            +void returnCar(ICar car, Consumer<ICar> rating)
-        }
-    } 
+    class AverageRating {
+        +double getScore()
+        +double getCondition()
+    }
     
-    package clientRMI {}
+    class IfsCars {
+        +AvailableCar[] getAvailableCars(String currency)
+        +void addCarToCart(String cartName, long id)
+        +AvailableCar[] getCarsInCart(String cartName, String currency)
+        +void confirmPurchase(String cartName, String bankAccountName)
+    }
+    class IfsCarsService {}
+    
+    IfsCars -down-> IfsCarsService
+    AvailableCar .down.> IfsCars
+    AverageRating .down.> IfsCars
 }
 
+package converterService {}
 
-RmiAndWebServiceIfCars <-down----- WebServiceBank
-
+fr.uge.corp.rentingapp --> fr.uge.corp.ifcars.common
+fr.uge.corp.ifcars.server --> fr.uge.corp.ifcars.common
+fr.uge.corp.ifcars.common <------ fr.uge.corp.ifscars.web
+fr.uge.corp.bank --> fr.uge.corp.ifscars.web
+converterService -left-----> fr.uge.corp.ifscars.web
 @enduml

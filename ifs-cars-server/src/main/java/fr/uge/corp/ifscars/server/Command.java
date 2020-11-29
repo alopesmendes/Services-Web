@@ -12,7 +12,7 @@ public class Command {
 	
 	private static void commandAddCar(String line, Storage storage) {
 		String[] commands = line.split(" ", 3);
-		if (verifyCommand(commands.length == 3, "@add [id:long] [price:double] [model:String]")) {
+		if (verifyCommand(commands.length == 3, "@add [id:long] [price:long] [model:String]")) {
 			long id = Long.parseLong(commands[0]);
 			long price = Long.parseLong(commands[1]);
 			String model = commands[2];
@@ -62,7 +62,7 @@ public class Command {
 	private static void commandHelp() {
 		String msg = "\r\nName : @remove, Description : removes car from model, Arguments : [id:long]\n\r"
 				+ "Name : @all, Description : shows all currently cars\n\r"
-				+ "Name : @add, Description : add a car to storage, Arguments : [id:long] [price:double] [model:String]t\n\r";
+				+ "Name : @add, Description : add a car to storage, Arguments : [id:long] [price:long] [model:String]t\n\r";
 		logger.log(Level.INFO, msg);
 				
 	}
